@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"html/template"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -69,14 +70,19 @@ func (h *Handler) authorizeGET(w http.ResponseWriter, r *http.Request) {
 	codeChallenge := q.Get("code_challenge")
 	codeChallengeMethod := q.Get("code_challenge_method")
 
+	log.Printf("[AUTHORIZE/GET] client_id=%q redirect_uri=%q response_type=%q code_challenge_method=%q",
+		clientID, redirectURI, responseType, codeChallengeMethod)
+
 	// Validate client and redirect_uri before doing anything else.
 	// Errors here are returned directly (not via redirect) per RFC 6749 §4.1.2.1.
 	client := h.store.FindClient(clientID)
 	if client == nil {
+		log.Printf("[AUTHORIZE/GET] unknown client_id=%q", clientID)
 		http.Error(w, "invalid_request: unknown client_id", http.StatusBadRequest)
 		return
 	}
 	if !clientHasRedirectURI(client, redirectURI) {
+		log.Printf("[AUTHORIZE/GET] redirect_uri %q not in registered URIs %v", redirectURI, client.RedirectURIs)
 		http.Error(w, "invalid_request: redirect_uri not registered", http.StatusBadRequest)
 		return
 	}
@@ -95,6 +101,7 @@ func (h *Handler) authorizeGET(w http.ResponseWriter, r *http.Request) {
 
 	// Embed all OAuth params in the form — no server-side session state needed.
 	// PKCE cryptographically binds the code challenge so it cannot be swapped.
+	log.Printf("[AUTHORIZE/GET] showing login for client_id=%q", clientID)
 	showLogin(w, map[string]any{
 		"ClientID":            clientID,
 		"RedirectURI":         redirectURI,
@@ -116,6 +123,9 @@ func (h *Handler) authorizePOST(w http.ResponseWriter, r *http.Request) {
 	redirectURI := r.FormValue("redirect_uri")
 	codeChallenge := r.FormValue("code_challenge")
 	codeChallengeMethod := r.FormValue("code_challenge_method")
+
+	log.Printf("[AUTHORIZE/POST] client_id=%q redirect_uri=%q username=%q",
+		clientID, redirectURI, r.FormValue("username"))
 
 	// Re-validate the client and redirect_uri from the form.
 	client := h.store.FindClient(clientID)
