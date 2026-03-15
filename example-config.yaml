@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  issuer: "http://localhost:8080"    # public base URL of this server
+  jwt_secret: "change-me-in-production"
+  token_ttl: 3600        # access token lifetime, seconds
+  auth_code_ttl: 300     # authorization code / login session lifetime, seconds
+  upstream_url: "http://localhost:9090" # MCP HTTP server – all unmatched requests are proxied here
+
+# Human users for the authorization code flow.
+# MCP clients (e.g. Claude) redirect the user here to authenticate.
+users:
+  - username: alice
+    password: "alice-password"
+  - username: bob
+    password: "bob-password"
+
+# Single client for the client_credentials grant.
+application:
+  client_id: "service-client-id"
+  client_secret: "service-client-secret"
+  allowed_scopes:
+    - read
+    - write
