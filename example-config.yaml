@@ -10,9 +10,9 @@ server:
 # MCP clients (e.g. Claude) redirect the user here to authenticate.
 users:
   - username: alice
-    password: "alice-password"
+    password: "$2a$10$Qjn9yuZMi4G2zgDXQk0vp.ig2f702c3GzH4GHVF4LZQnicuO00Q2O"  # alice-password
   - username: bob
-    password: "bob-password"
+    password: "$2a$10$9tKZfkDeRJsTgxyQ5X7.Rexdg2r84UmhkgAMep6JkYRubcjgxKSMK"  # bob-password
 
 # Single client for the client_credentials grant.
 application:

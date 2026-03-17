@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var loginTmpl = template.Must(template.New("login").Parse(`<!DOCTYPE html>
@@ -197,9 +198,11 @@ func (h *Handler) authorizePOST(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) authenticateUser(username, password string) bool {
 	u := h.cfg.FindUser(username)
 	if u == nil {
+		// Spend time on a dummy hash to prevent user enumeration via timing.
+		bcrypt.CompareHashAndPassword([]byte("$2a$10$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"), []byte(password))
 		return false
 	}
-	return secureCompare(u.Password, password)
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)) == nil
 }
 
 func showLogin(w http.ResponseWriter, data map[string]any) {
