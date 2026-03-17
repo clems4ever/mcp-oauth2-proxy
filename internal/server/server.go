@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/clems4ever/mcp-oauth2-go/config"
-	"github.com/clems4ever/mcp-oauth2-go/internal/handler"
-	"github.com/clems4ever/mcp-oauth2-go/internal/store"
+	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/handler"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
 )
 
 // New builds and returns a configured HTTP server.

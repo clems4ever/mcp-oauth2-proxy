@@ -6,17 +6,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/clems4ever/mcp-oauth2-go/config"
-	"github.com/clems4ever/mcp-oauth2-go/internal/server"
+	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/server"
 	"github.com/spf13/cobra"
 )
 
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "mcp-oauth2-go",
+	Use:   "mcp-oauth2-proxy",
 	Short: "OAuth2 authorization server (client credentials grant)",
-	Long:  `mcp-oauth2-go is an OAuth2 authorization server implementing the client credentials grant for multiple configured applications.`,
+	Long:  `mcp-oauth2-proxy is an OAuth2 authorization server implementing the client credentials grant for multiple configured applications.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load(cfgFile)
 		if err != nil {

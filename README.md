@@ -1,14 +1,14 @@
-# mcp-oauth2-go
+# mcp-oauth2-proxy
 
 An OAuth2 authorization server implementing the **client credentials grant** (RFC 6749 §4.4), supporting multiple configured applications.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/clems4ever/mcp-oauth2-go
-cd mcp-oauth2-go
-go build -o mcp-oauth2-go .
-./mcp-oauth2-go --config example-config.yaml
+git clone https://github.com/clems4ever/mcp-oauth2-proxy
+cd mcp-oauth2-proxy
+go build -o mcp-oauth2-proxy .
+./mcp-oauth2-proxy --config example-config.yaml
 ```
 
 ## Configuration

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clems4ever/mcp-oauth2-go/config"
-	"github.com/clems4ever/mcp-oauth2-go/internal/token"
+	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/token"
 )
 
 // Proxy returns an http.Handler that enforces Bearer token authentication,

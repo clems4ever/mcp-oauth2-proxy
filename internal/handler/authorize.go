@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clems4ever/mcp-oauth2-go/internal/store"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
 )
 
 var loginTmpl = template.Must(template.New("login").Parse(`<!DOCTYPE html>

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/clems4ever/mcp-oauth2-go/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/config"
 )
 
 // baseURL returns the public base URL for the current request.

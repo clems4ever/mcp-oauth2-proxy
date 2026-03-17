@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/clems4ever/mcp-oauth2-go/config"
-	"github.com/clems4ever/mcp-oauth2-go/internal/store"
-	"github.com/clems4ever/mcp-oauth2-go/internal/token"
+	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/token"
 )
 
 // Handler handles all OAuth2 HTTP requests.

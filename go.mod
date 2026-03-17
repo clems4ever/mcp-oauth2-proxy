@@ -1,4 +1,4 @@
-module github.com/clems4ever/mcp-oauth2-go
+module github.com/clems4ever/mcp-oauth2-proxy
 
 go 1.25.0
 
