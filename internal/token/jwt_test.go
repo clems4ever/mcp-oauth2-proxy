@@ -9,9 +9,10 @@ import (
 )
 
 const testSecret = "super-secret-key-for-tests"
+const testIssuer = "https://auth.example.com"
 
 func TestGenerate_ReturnsToken(t *testing.T) {
-	tok, err := Generate(testSecret, "client1", []string{"read", "write"}, 3600)
+	tok, err := Generate(testSecret, testIssuer, "client1", []string{"read", "write"}, 3600)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -26,12 +27,12 @@ func TestGenerate_ReturnsToken(t *testing.T) {
 
 func TestGenerate_Claims(t *testing.T) {
 	scopes := []string{"read", "write"}
-	tok, err := Generate(testSecret, "client42", scopes, 3600)
+	tok, err := Generate(testSecret, testIssuer, "client42", scopes, 3600)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	claims, err := Verify(testSecret, tok)
+	claims, err := Verify(testSecret, testIssuer, tok)
 	if err != nil {
 		t.Fatalf("unexpected verify error: %v", err)
 	}
@@ -44,11 +45,11 @@ func TestGenerate_Claims(t *testing.T) {
 }
 
 func TestGenerate_EmptyScopes(t *testing.T) {
-	tok, err := Generate(testSecret, "client1", []string{}, 60)
+	tok, err := Generate(testSecret, testIssuer, "client1", []string{}, 60)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	claims, err := Verify(testSecret, tok)
+	claims, err := Verify(testSecret, testIssuer, tok)
 	if err != nil {
 		t.Fatalf("unexpected verify error: %v", err)
 	}
@@ -58,11 +59,11 @@ func TestGenerate_EmptyScopes(t *testing.T) {
 }
 
 func TestGenerate_Expiry(t *testing.T) {
-	tok, err := Generate(testSecret, "client1", nil, 60)
+	tok, err := Generate(testSecret, testIssuer, "client1", nil, 60)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	claims, err := Verify(testSecret, tok)
+	claims, err := Verify(testSecret, testIssuer, tok)
 	if err != nil {
 		t.Fatalf("unexpected verify error: %v", err)
 	}
@@ -74,11 +75,11 @@ func TestGenerate_Expiry(t *testing.T) {
 }
 
 func TestVerify_ValidToken(t *testing.T) {
-	tok, err := Generate(testSecret, "userX", []string{"admin"}, 3600)
+	tok, err := Generate(testSecret, testIssuer, "userX", []string{"admin"}, 3600)
 	if err != nil {
 		t.Fatalf("unexpected error generating token: %v", err)
 	}
-	claims, err := Verify(testSecret, tok)
+	claims, err := Verify(testSecret, testIssuer, tok)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -91,29 +92,29 @@ func TestVerify_ValidToken(t *testing.T) {
 }
 
 func TestVerify_WrongSecret(t *testing.T) {
-	tok, err := Generate(testSecret, "client1", nil, 3600)
+	tok, err := Generate(testSecret, testIssuer, "client1", nil, 3600)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	_, err = Verify("wrong-secret", tok)
+	_, err = Verify("wrong-secret", testIssuer, tok)
 	if err == nil {
 		t.Error("expected error when verifying with wrong secret")
 	}
 }
 
 func TestVerify_ExpiredToken(t *testing.T) {
-	tok, err := Generate(testSecret, "client1", nil, -1)
+	tok, err := Generate(testSecret, testIssuer, "client1", nil, -1)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	_, err = Verify(testSecret, tok)
+	_, err = Verify(testSecret, testIssuer, tok)
 	if err == nil {
 		t.Error("expected error for expired token")
 	}
 }
 
 func TestVerify_MalformedToken(t *testing.T) {
-	_, err := Verify(testSecret, "not.a.valid.jwt.token")
+	_, err := Verify(testSecret, testIssuer, "not.a.valid.jwt.token")
 	if err == nil {
 		t.Error("expected error for malformed token")
 	}
@@ -134,7 +135,7 @@ func TestVerify_WrongAlgorithm(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to craft token: %v", err)
 	}
-	_, err = Verify(testSecret, signed)
+	_, err = Verify(testSecret, testIssuer, signed)
 	if err == nil {
 		t.Error("expected error for token with unexpected signing algorithm")
 	}

@@ -15,11 +15,13 @@ type Claims struct {
 }
 
 // Generate signs and returns a JWT access token for the given client.
-func Generate(secret, clientID string, scopes []string, ttlSeconds int) (string, error) {
+func Generate(secret, issuer, clientID string, scopes []string, ttlSeconds int) (string, error) {
 	now := time.Now()
 	claims := Claims{
 		Scope: strings.Join(scopes, " "),
 		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    issuer,
+			Audience:  jwt.ClaimStrings{issuer},
 			Subject:   clientID,
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(ttlSeconds) * time.Second)),
@@ -35,13 +37,16 @@ func Generate(secret, clientID string, scopes []string, ttlSeconds int) (string,
 }
 
 // Verify parses and validates a signed JWT, returning the claims on success.
-func Verify(secret, tokenString string) (*Claims, error) {
+func Verify(secret, issuer, tokenString string) (*Claims, error) {
 	tok, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(secret), nil
-	})
+	},
+		jwt.WithIssuer(issuer),
+		jwt.WithAudience(issuer),
+	)
 	if err != nil {
 		return nil, err
 	}

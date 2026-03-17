@@ -24,15 +24,15 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 		if err != nil {
 			panic(fmt.Sprintf("invalid upstream_url %q: %v", upstreamURL, err))
 		}
-		rp = httputil.NewSingleHostReverseProxy(target)
-		originalDirector := rp.Director
-		rp.Director = func(req *http.Request) {
-			originalDirector(req)
-			req.Host = target.Host
-		}
-		rp.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-			log.Printf("[PROXY] upstream error: %v", err)
-			http.Error(w, "upstream error: "+err.Error(), http.StatusBadGateway)
+		rp = &httputil.ReverseProxy{
+			Rewrite: func(pr *httputil.ProxyRequest) {
+				pr.SetURL(target)
+				pr.Out.Host = target.Host
+			},
+			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+				log.Printf("[PROXY] upstream error: %v", err)
+				http.Error(w, "upstream error: "+err.Error(), http.StatusBadGateway)
+			},
 		}
 	}
 
@@ -47,7 +47,7 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 			http.Error(w, "authentication required", http.StatusUnauthorized)
 			return
 		}
-		if _, err := token.Verify(cfg.Server.JWTSecret, raw); err != nil {
+		if _, err := token.Verify(cfg.Server.JWTSecret, cfg.Server.Issuer, raw); err != nil {
 			log.Printf("[AUTH] invalid token: %v", err)
 			w.Header().Set("WWW-Authenticate",
 				fmt.Sprintf(`Bearer error="invalid_token" resource_metadata=%q`, resourceMetadata))

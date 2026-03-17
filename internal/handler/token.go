@@ -81,7 +81,7 @@ func (h *Handler) handleClientCredentials(w http.ResponseWriter, r *http.Request
 
 	granted := filterScopes(app.AllowedScopes, strings.Fields(r.FormValue("scope")))
 	log.Printf("[TOKEN/cc] issuing token for client_id=%q scopes=%v", clientID, granted)
-	tok, err := token.Generate(h.cfg.Server.JWTSecret, clientID, granted, h.cfg.Server.TokenTTL)
+	tok, err := token.Generate(h.cfg.Server.JWTSecret, h.cfg.Server.Issuer, clientID, granted, h.cfg.Server.TokenTTL)
 	if err != nil {
 		log.Printf("[TOKEN/cc] generate error: %v", err)
 		writeError(w, "server_error", "failed to generate token", http.StatusInternalServerError)
@@ -159,7 +159,7 @@ func (h *Handler) handleAuthorizationCode(w http.ResponseWriter, r *http.Request
 	}
 
 	log.Printf("[TOKEN/ac] issuing token for subject=%q client_id=%q scopes=%v", ac.Subject, clientID, ac.Scopes)
-	tok, err := token.Generate(h.cfg.Server.JWTSecret, ac.Subject, ac.Scopes, h.cfg.Server.TokenTTL)
+	tok, err := token.Generate(h.cfg.Server.JWTSecret, h.cfg.Server.Issuer, ac.Subject, ac.Scopes, h.cfg.Server.TokenTTL)
 	if err != nil {
 		log.Printf("[TOKEN/ac] generate error: %v", err)
 		writeError(w, "server_error", "failed to generate token", http.StatusInternalServerError)
