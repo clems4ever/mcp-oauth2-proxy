@@ -31,7 +31,6 @@ func New(cfg *config.Config) *http.Server {
 	// RFC 8414 – authorization server metadata discovery
 	mux.HandleFunc("GET /.well-known/oauth-authorization-server", h.Metadata)
 	// RFC 7591 – dynamic client registration
-	mux.HandleFunc("POST /oauth2/register", h.Register)
 	// RFC 6749 / 9700 – authorization endpoint (GET = show login, POST = submit)
 	mux.HandleFunc("/oauth2/authorize", h.Authorize)
 	// RFC 6749 / 9700 – token endpoint
