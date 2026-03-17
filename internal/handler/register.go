@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"slices"
 )
 
 type registrationRequest struct {
@@ -32,11 +33,9 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		writeError(w, "invalid_request", "redirect_uris is required", http.StatusBadRequest)
 		return
 	}
-	for _, u := range req.RedirectURIs {
-		if u == "" {
-			writeError(w, "invalid_redirect_uri", "redirect_uris must not contain empty values", http.StatusBadRequest)
-			return
-		}
+	if slices.Contains(req.RedirectURIs, "") {
+		writeError(w, "invalid_redirect_uri", "redirect_uris must not contain empty values", http.StatusBadRequest)
+		return
 	}
 
 	isPublic := req.TokenEndpointAuthMethod == "none"
