@@ -37,7 +37,7 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		resourceMetadata := baseURL(cfg, r) + "/.well-known/oauth-protected-resource"
+		resourceMetadata := baseURL(cfg) + "/.well-known/oauth-protected-resource"
 
 		raw := bearerToken(r)
 		if raw == "" {

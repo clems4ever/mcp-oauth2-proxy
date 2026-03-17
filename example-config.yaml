@@ -1,6 +1,6 @@
 server:
   port: 8080
-  issuer: "http://localhost:8080"    # public base URL of this server
+  issuer: "https://localhost:8080"    # public base URL of this server (must be set explicitly; request headers are not trusted)
   jwt_secret: "change-me-in-production"
   token_ttl: 3600        # access token lifetime, seconds
   auth_code_ttl: 300     # authorization code / login session lifetime, seconds
@@ -21,3 +21,5 @@ application:
   allowed_scopes:
     - read
     - write
+  redirect_uris:
+    - "https://claude.ai/api/mcp/auth_callback"

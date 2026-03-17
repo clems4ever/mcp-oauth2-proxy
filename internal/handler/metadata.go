@@ -22,7 +22,7 @@ type protectedResourceResponse struct {
 // ProtectedResource handles GET /.well-known/oauth-protected-resource (RFC 9728).
 // It tells the client which authorization server protects this resource.
 func (h *Handler) ProtectedResource(w http.ResponseWriter, r *http.Request) {
-	issuer := baseURL(h.cfg, r)
+	issuer := baseURL(h.cfg)
 	writeJSON(w, http.StatusOK, protectedResourceResponse{
 		Resource:               issuer,
 		AuthorizationServers:   []string{issuer},
@@ -32,7 +32,7 @@ func (h *Handler) ProtectedResource(w http.ResponseWriter, r *http.Request) {
 
 // Metadata handles GET /.well-known/oauth-authorization-server (RFC 8414).
 func (h *Handler) Metadata(w http.ResponseWriter, r *http.Request) {
-	issuer := baseURL(h.cfg, r)
+	issuer := baseURL(h.cfg)
 	writeJSON(w, http.StatusOK, metadataResponse{
 		Issuer:                            issuer,
 		AuthorizationEndpoint:             issuer + "/oauth2/authorize",
