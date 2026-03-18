@@ -73,7 +73,9 @@ func (h *Handler) handleClientCredentials(w http.ResponseWriter, r *http.Request
 	}
 
 	app := &h.cfg.Application
-	if !secureCompare(app.ClientID, clientID) || !secureCompare(app.ClientSecret, clientSecret) {
+	idOK := secureCompare(app.ClientID, clientID)
+	secretOK := secureCompare(app.ClientSecret, clientSecret)
+	if !idOK || !secretOK {
 		log.Printf("[TOKEN/cc] credential mismatch: got client_id=%q (want %q)", clientID, app.ClientID)
 		writeError(w, "invalid_client", "invalid client credentials", http.StatusUnauthorized)
 		return
