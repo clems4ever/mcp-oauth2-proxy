@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// DynamicClient is a client registered via dynamic client registration (RFC 7591).
-type DynamicClient struct {
+// Client is a client registered via dynamic client registration (RFC 7591).
+type Client struct {
 	ClientID     string
 	ClientSecret string // empty for public clients
 	RedirectURIs []string
@@ -32,14 +32,14 @@ type AuthCode struct {
 // Store is the in-memory authorization server state.
 type Store struct {
 	mu      sync.RWMutex
-	clients map[string]*DynamicClient
+	clients map[string]*Client
 	codes   map[string]*AuthCode
 }
 
 // New creates a new Store.
 func New() *Store {
 	return &Store{
-		clients: make(map[string]*DynamicClient),
+		clients: make(map[string]*Client),
 		codes:   make(map[string]*AuthCode),
 	}
 }
@@ -53,7 +53,7 @@ func randomHex(n int) (string, error) {
 }
 
 // RegisterClient creates and persists a new dynamic client.
-func (s *Store) RegisterClient(redirectURIs []string, name string, isPublic bool) (*DynamicClient, error) {
+func (s *Store) RegisterClient(redirectURIs []string, name string, isPublic bool) (*Client, error) {
 	id, err := randomHex(16)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (s *Store) RegisterClient(redirectURIs []string, name string, isPublic bool
 		}
 	}
 
-	c := &DynamicClient{
+	c := &Client{
 		ClientID:     id,
 		ClientSecret: secret,
 		RedirectURIs: redirectURIs,
@@ -82,14 +82,14 @@ func (s *Store) RegisterClient(redirectURIs []string, name string, isPublic bool
 }
 
 // PutClient inserts (or replaces) a client with a pre-assigned ID.
-func (s *Store) PutClient(c *DynamicClient) {
+func (s *Store) PutClient(c *Client) {
 	s.mu.Lock()
 	s.clients[c.ClientID] = c
 	s.mu.Unlock()
 }
 
 // FindClient returns the dynamic client with the given ID, or nil.
-func (s *Store) FindClient(clientID string) *DynamicClient {
+func (s *Store) FindClient(clientID string) *Client {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.clients[clientID]

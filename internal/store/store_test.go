@@ -94,7 +94,7 @@ func TestRegisterClient_StoredAndRetrievable(t *testing.T) {
 
 func TestPutClient(t *testing.T) {
 	s := New()
-	c := &DynamicClient{
+	c := &Client{
 		ClientID:     "fixed-id",
 		ClientSecret: "fixed-secret",
 		RedirectURIs: []string{"https://example.com/cb"},
@@ -115,10 +115,10 @@ func TestPutClient(t *testing.T) {
 
 func TestPutClient_Replace(t *testing.T) {
 	s := New()
-	original := &DynamicClient{ClientID: "id1", ClientName: "original"}
+	original := &Client{ClientID: "id1", ClientName: "original"}
 	s.PutClient(original)
 
-	updated := &DynamicClient{ClientID: "id1", ClientName: "updated"}
+	updated := &Client{ClientID: "id1", ClientName: "updated"}
 	s.PutClient(updated)
 
 	found := s.FindClient("id1")

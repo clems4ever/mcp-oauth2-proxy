@@ -15,7 +15,7 @@ func New(cfg *config.Config) *http.Server {
 
 	// Seed the statically-configured application so it is available to the
 	// authorization code flow (authorize endpoint checks the store).
-	st.PutClient(&store.DynamicClient{
+	st.PutClient(&store.Client{
 		ClientID:     cfg.Application.ClientID,
 		ClientSecret: cfg.Application.ClientSecret,
 		RedirectURIs: cfg.Application.RedirectURIs,

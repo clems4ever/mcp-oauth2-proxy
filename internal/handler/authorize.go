@@ -174,7 +174,7 @@ func (h *Handler) authorizePOST(w http.ResponseWriter, r *http.Request) {
 		Code:                code,
 		ClientID:            clientID,
 		RedirectURI:         redirectURI,
-		Scopes:              strings.Fields(scope),
+		Scopes:              filterScopes(h.cfg.Application.AllowedScopes, strings.Fields(scope)),
 		CodeChallenge:       codeChallenge,
 		CodeChallengeMethod: codeChallengeMethod,
 		Subject:             r.FormValue("username"),
@@ -210,7 +210,7 @@ func showLogin(w http.ResponseWriter, data map[string]any) {
 	_ = loginTmpl.Execute(w, data)
 }
 
-func clientHasRedirectURI(client *store.DynamicClient, uri string) bool {
+func clientHasRedirectURI(client *store.Client, uri string) bool {
 	for _, u := range client.RedirectURIs {
 		if u == uri {
 			return true
