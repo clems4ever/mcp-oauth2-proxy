@@ -1,0 +1,58 @@
+{
+	"functions": [
+		{
+			"function_name": "TestGenerate_ReturnsToken",
+			"documentation_hash": "337eacafa6fed54e93f16313d7109b8655788ddd86386b1a6176ebb19217c35b",
+			"definition_hash": "4132ff9a8dbe244304222167d096baa35b9beab93f86971ac4910ebfb14620fe",
+			"reviewed_at": "2026-03-19T12:01:43.617791022Z"
+		},
+		{
+			"function_name": "TestGenerate_Claims",
+			"documentation_hash": "db6126b1922dfa8dfc626d8a5e9083d702d62948279355760e87453fb90089b9",
+			"definition_hash": "9b2f189528508bcb70cd15ccba67fae2c23b9495cf5b1c052a3c80b9ecac5e4b",
+			"reviewed_at": "2026-03-19T12:01:43.620307112Z"
+		},
+		{
+			"function_name": "TestGenerate_EmptyScopes",
+			"documentation_hash": "fa372a896ca5bd7d8cb620d30d2c5e53b99da079ef9c27897483cf65630ad5b6",
+			"definition_hash": "d4d7aa0882a7e8d521a05f20c5817697a6c1bf49a2cecfa31f38b1900276d4d4",
+			"reviewed_at": "2026-03-19T12:01:43.622663498Z"
+		},
+		{
+			"function_name": "TestGenerate_Expiry",
+			"documentation_hash": "fc458458ca9c22ad15d9988b1f7ff45453462b41a05e55e0aac8fd80f44c3dfe",
+			"definition_hash": "614082004b0635ae0bf6cf1ca3017fdd47206df4cfe0dbf268a4c52a488e744e",
+			"reviewed_at": "2026-03-19T12:01:43.624932153Z"
+		},
+		{
+			"function_name": "TestVerify_ValidToken",
+			"documentation_hash": "a62f1f99da2930ddc9a181e64815be8b61094c3fe3daca5b828d6a39f46fe31f",
+			"definition_hash": "d8493adb109e9d3e8a29a914b8be76b767a58451155d2e9b02bd087745ac71c8",
+			"reviewed_at": "2026-03-19T12:01:43.627195838Z"
+		},
+		{
+			"function_name": "TestVerify_WrongSecret",
+			"documentation_hash": "69ad7f0f92574a84bf3f956ae9bd18ec1248b62c2e82c217b19baafd11c63bd0",
+			"definition_hash": "2c87fdaa83010e2e0caa335d17bcb5973ffa3e75b30c8bf76c4a9d18b3f6afeb",
+			"reviewed_at": "2026-03-19T12:01:43.629563377Z"
+		},
+		{
+			"function_name": "TestVerify_ExpiredToken",
+			"documentation_hash": "f72a5022171921038c831620e7b10ae9170fe10c46595c4deb08bd62dd7c2b87",
+			"definition_hash": "fb0f87034dc66d70f153d8d01a20c2e87e9c7269a420a8fbe3e7aab84c749ce7",
+			"reviewed_at": "2026-03-19T12:01:43.631900943Z"
+		},
+		{
+			"function_name": "TestVerify_MalformedToken",
+			"documentation_hash": "2cebe556b999c4b83e2a649b0f46fa44c868c5a2592d0c654ef00faef77c1feb",
+			"definition_hash": "8bc6c26ca4fd5f67708056a98006569c88b09afa3a536916754ccd54849b160e",
+			"reviewed_at": "2026-03-19T12:01:43.634252838Z"
+		},
+		{
+			"function_name": "TestVerify_WrongAlgorithm",
+			"documentation_hash": "c927852855aa7130be06b993290e837d59746e6b2a09a8f6c54457214c1f1400",
+			"definition_hash": "3812ae8878e764f9ea24a717d7bd36c0ff38b2942037df9f700416d2b098ed75",
+			"reviewed_at": "2026-03-19T12:01:43.636895808Z"
+		}
+	]
+}

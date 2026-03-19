@@ -11,6 +11,9 @@ import (
 const testSecret = "super-secret-key-for-tests"
 const testIssuer = "https://auth.example.com"
 
+// TestGenerate_ReturnsToken verifies that Generate returns a non-empty three-part JWT for valid inputs.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestGenerate_ReturnsToken(t *testing.T) {
 	tok, err := Generate(testSecret, testIssuer, "client1", []string{"read", "write"}, 3600)
 	if err != nil {
@@ -25,6 +28,9 @@ func TestGenerate_ReturnsToken(t *testing.T) {
 	}
 }
 
+// TestGenerate_Claims verifies that the subject and scope claims are correctly embedded in the generated token.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestGenerate_Claims(t *testing.T) {
 	scopes := []string{"read", "write"}
 	tok, err := Generate(testSecret, testIssuer, "client42", scopes, 3600)
@@ -44,6 +50,9 @@ func TestGenerate_Claims(t *testing.T) {
 	}
 }
 
+// TestGenerate_EmptyScopes verifies that an empty scope list results in an empty scope claim.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestGenerate_EmptyScopes(t *testing.T) {
 	tok, err := Generate(testSecret, testIssuer, "client1", []string{}, 60)
 	if err != nil {
@@ -58,6 +67,9 @@ func TestGenerate_EmptyScopes(t *testing.T) {
 	}
 }
 
+// TestGenerate_Expiry verifies that the expiry claim is set to approximately now plus ttlSeconds.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestGenerate_Expiry(t *testing.T) {
 	tok, err := Generate(testSecret, testIssuer, "client1", nil, 60)
 	if err != nil {
@@ -74,6 +86,9 @@ func TestGenerate_Expiry(t *testing.T) {
 	}
 }
 
+// TestVerify_ValidToken verifies that a freshly generated token is accepted and claims are returned.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestVerify_ValidToken(t *testing.T) {
 	tok, err := Generate(testSecret, testIssuer, "userX", []string{"admin"}, 3600)
 	if err != nil {
@@ -91,6 +106,9 @@ func TestVerify_ValidToken(t *testing.T) {
 	}
 }
 
+// TestVerify_WrongSecret verifies that a token signed with a different secret is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestVerify_WrongSecret(t *testing.T) {
 	tok, err := Generate(testSecret, testIssuer, "client1", nil, 3600)
 	if err != nil {
@@ -102,6 +120,9 @@ func TestVerify_WrongSecret(t *testing.T) {
 	}
 }
 
+// TestVerify_ExpiredToken verifies that an expired token is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestVerify_ExpiredToken(t *testing.T) {
 	tok, err := Generate(testSecret, testIssuer, "client1", nil, -1)
 	if err != nil {
@@ -113,6 +134,9 @@ func TestVerify_ExpiredToken(t *testing.T) {
 	}
 }
 
+// TestVerify_MalformedToken verifies that a malformed token string is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestVerify_MalformedToken(t *testing.T) {
 	_, err := Verify(testSecret, testIssuer, "not.a.valid.jwt.token")
 	if err == nil {
@@ -120,6 +144,9 @@ func TestVerify_MalformedToken(t *testing.T) {
 	}
 }
 
+// TestVerify_WrongAlgorithm verifies that a token using an unexpected signing algorithm is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestVerify_WrongAlgorithm(t *testing.T) {
 	// Craft a token signed with RS256 (asymmetric) — should be rejected.
 	claims := &Claims{
