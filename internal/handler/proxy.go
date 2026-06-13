@@ -16,7 +16,8 @@ import (
 )
 
 // Proxy returns an http.Handler that enforces Bearer token authentication,
-// logs unauthenticated requests, and forwards authenticated ones to the upstream.
+// dumps unauthenticated requests, logs a one-line entry for each proxied
+// request, and forwards authenticated ones to the upstream.
 //
 // @arg cfg The server configuration providing the JWT secret, issuer and base URL.
 // @arg upstreamURL The upstream MCP server URL to forward authenticated requests to; empty disables proxying.
@@ -64,6 +65,7 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 			return
 		}
 		if rp != nil {
+			log.Printf("[PROXY] %s %s", r.Method, r.RequestURI)
 			rp.ServeHTTP(w, r)
 			return
 		}

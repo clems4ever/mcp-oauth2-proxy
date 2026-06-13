@@ -2,9 +2,9 @@
 	"functions": [
 		{
 			"function_name": "Proxy",
-			"documentation_hash": "b2f47c74d013a12461028eb398b242d02c72780042e8c2e41633c966610e1657",
-			"definition_hash": "5c70d6ef77b4a04c257846d77333b3c840a9f750b4275bfea2ab1370f56948b9",
-			"reviewed_at": "2026-06-13T17:28:53.80328581Z"
+			"documentation_hash": "6f1524ca686b13d9a4522d75836956a459dc78dc97fb2aed64e332cea02c05d0",
+			"definition_hash": "3c60d4703a7d5049f8463d56acd1f44ac2f51b53f2eb1e767d43515d94a06495",
+			"reviewed_at": "2026-06-13T22:38:03.122443864Z"
 		},
 		{
 			"function_name": "bearerToken",
