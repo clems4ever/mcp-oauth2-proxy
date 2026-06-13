@@ -54,6 +54,11 @@ func New(cfg *config.Config, oidcClient *oidc.Client) *http.Server {
 		mux.HandleFunc("POST /oauth2/oidc/login", h.OIDCLogin)
 		mux.HandleFunc("GET /oauth2/oidc/callback", h.OIDCCallback)
 	}
+	// Browsers auto-request /favicon.ico while on the login page; answer it
+	// quietly so it does not hit the authenticated proxy (401 + request dump).
+	mux.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 	// Catch-all: enforce Bearer auth, then proxy to the upstream MCP server.
 	mux.Handle("/", handler.Proxy(cfg, cfg.Server.UpstreamURL))
 
