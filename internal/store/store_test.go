@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// TestNew verifies all internal maps are initialized.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestNew(t *testing.T) {
 	s := New()
 	if s == nil {
@@ -16,8 +19,67 @@ func TestNew(t *testing.T) {
 	if s.codes == nil {
 		t.Error("expected codes map to be initialized")
 	}
+	if s.oidcStates == nil {
+		t.Error("expected oidcStates map to be initialized")
+	}
 }
 
+// TestConsumeOIDCState_Valid verifies a saved state can be retrieved.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeOIDCState_Valid(t *testing.T) {
+	s := New()
+	s.SaveOIDCState(&OIDCState{State: "abc", Nonce: "n", ExpiresAt: time.Now().Add(time.Minute)})
+
+	got := s.ConsumeOIDCState("abc")
+	if got == nil {
+		t.Fatal("expected to retrieve saved state")
+	}
+	if got.Nonce != "n" {
+		t.Errorf("expected nonce n, got %q", got.Nonce)
+	}
+}
+
+// TestConsumeOIDCState_SingleUse verifies a state cannot be consumed twice.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeOIDCState_SingleUse(t *testing.T) {
+	s := New()
+	s.SaveOIDCState(&OIDCState{State: "abc", ExpiresAt: time.Now().Add(time.Minute)})
+
+	if s.ConsumeOIDCState("abc") == nil {
+		t.Fatal("first consume should succeed")
+	}
+	if s.ConsumeOIDCState("abc") != nil {
+		t.Error("second consume must return nil (single use)")
+	}
+}
+
+// TestConsumeOIDCState_Expired verifies an expired state is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeOIDCState_Expired(t *testing.T) {
+	s := New()
+	s.SaveOIDCState(&OIDCState{State: "abc", ExpiresAt: time.Now().Add(-time.Minute)})
+
+	if s.ConsumeOIDCState("abc") != nil {
+		t.Error("expired state must return nil")
+	}
+}
+
+// TestConsumeOIDCState_Unknown verifies an unknown state returns nil.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeOIDCState_Unknown(t *testing.T) {
+	s := New()
+	if s.ConsumeOIDCState("missing") != nil {
+		t.Error("unknown state must return nil")
+	}
+}
+
+// TestRegisterClient_Confidential verifies a confidential client gets a secret and is stored.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestRegisterClient_Confidential(t *testing.T) {
 	s := New()
 	redirectURIs := []string{"https://example.com/callback"}
@@ -45,6 +107,9 @@ func TestRegisterClient_Confidential(t *testing.T) {
 	}
 }
 
+// TestRegisterClient_Public verifies a public client has no secret.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestRegisterClient_Public(t *testing.T) {
 	s := New()
 	c, err := s.RegisterClient([]string{"https://example.com/callback"}, "public-app", true)
@@ -59,6 +124,9 @@ func TestRegisterClient_Public(t *testing.T) {
 	}
 }
 
+// TestRegisterClient_UniqueIDs verifies distinct clients get distinct IDs and secrets.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestRegisterClient_UniqueIDs(t *testing.T) {
 	s := New()
 	a, err := s.RegisterClient(nil, "a", false)
@@ -77,6 +145,9 @@ func TestRegisterClient_UniqueIDs(t *testing.T) {
 	}
 }
 
+// TestRegisterClient_StoredAndRetrievable verifies a registered client is retrievable via FindClient.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestRegisterClient_StoredAndRetrievable(t *testing.T) {
 	s := New()
 	c, err := s.RegisterClient([]string{"https://example.com/cb"}, "app", false)
@@ -92,6 +163,9 @@ func TestRegisterClient_StoredAndRetrievable(t *testing.T) {
 	}
 }
 
+// TestPutClient verifies a pre-assigned client is stored and retrievable.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestPutClient(t *testing.T) {
 	s := New()
 	c := &Client{
@@ -113,6 +187,9 @@ func TestPutClient(t *testing.T) {
 	}
 }
 
+// TestPutClient_Replace verifies PutClient replaces an existing client with the same ID.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestPutClient_Replace(t *testing.T) {
 	s := New()
 	original := &Client{ClientID: "id1", ClientName: "original"}
@@ -127,6 +204,9 @@ func TestPutClient_Replace(t *testing.T) {
 	}
 }
 
+// TestFindClient_NotFound verifies FindClient returns nil for an unknown client.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestFindClient_NotFound(t *testing.T) {
 	s := New()
 	found := s.FindClient("nonexistent")
@@ -135,6 +215,9 @@ func TestFindClient_NotFound(t *testing.T) {
 	}
 }
 
+// TestSaveAndConsumeAuthCode verifies a saved authorization code can be consumed.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestSaveAndConsumeAuthCode(t *testing.T) {
 	s := New()
 	ac := &AuthCode{
@@ -154,6 +237,9 @@ func TestSaveAndConsumeAuthCode(t *testing.T) {
 	}
 }
 
+// TestConsumeAuthCode_DeletesOnConsume verifies an authorization code is single-use.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestConsumeAuthCode_DeletesOnConsume(t *testing.T) {
 	s := New()
 	ac := &AuthCode{
@@ -173,6 +259,9 @@ func TestConsumeAuthCode_DeletesOnConsume(t *testing.T) {
 	}
 }
 
+// TestConsumeAuthCode_Expired verifies an expired authorization code is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestConsumeAuthCode_Expired(t *testing.T) {
 	s := New()
 	ac := &AuthCode{
@@ -188,6 +277,9 @@ func TestConsumeAuthCode_Expired(t *testing.T) {
 	}
 }
 
+// TestConsumeAuthCode_NotFound verifies ConsumeAuthCode returns nil for an unknown code.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestConsumeAuthCode_NotFound(t *testing.T) {
 	s := New()
 	got := s.ConsumeAuthCode("nonexistent")

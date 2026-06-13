@@ -1,0 +1,16 @@
+{
+	"functions": [
+		{
+			"function_name": "Execute",
+			"documentation_hash": "bdb3bb98b11a49b153abc09af6c20621d420c6f2c7dbd77c5a7127ea508425d6",
+			"definition_hash": "82fcbfad61453371e65b4adff77eeba2c0983f76f8d0968234da912e0f67de3c",
+			"reviewed_at": "2026-06-13T19:36:29.880782286Z"
+		},
+		{
+			"function_name": "init",
+			"documentation_hash": "c8ba58a1d83fe1c7cf6737434f0afe03ffc429a383fc387510be31c309776abe",
+			"definition_hash": "a3593393153f65fc88aef66485aeef52bfc13f67c35dbf1f5d245fc40cfd91f6",
+			"reviewed_at": "2026-06-13T19:36:29.880951397Z"
+		}
+	]
+}

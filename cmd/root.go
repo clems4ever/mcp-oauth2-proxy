@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/oidc"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/server"
 	"github.com/spf13/cobra"
 )
@@ -23,7 +25,16 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		srv := server.New(cfg)
+		var oidcClient *oidc.Client
+		if cfg.OIDCEnabled() {
+			oidcClient, err = oidc.New(context.Background(), cfg.OIDC)
+			if err != nil {
+				return fmt.Errorf("initializing OIDC provider: %w", err)
+			}
+			log.Printf("OIDC login enabled for issuer %s", cfg.OIDC.Issuer)
+		}
+
+		srv := server.New(cfg, oidcClient)
 		log.Printf("starting OAuth2 server on %s", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil {
 			return fmt.Errorf("server error: %w", err)
@@ -32,7 +43,10 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// Execute runs the root command.
+// Execute runs the root command, printing any error to stderr and exiting
+// non-zero on failure.
+//
+// @testcase TestConfigFlagRegistered verifies the root command is wired with its flags.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -40,6 +54,9 @@ func Execute() {
 	}
 }
 
+// init registers the --config persistent flag with its default path.
+//
+// @testcase TestConfigFlagRegistered verifies the --config flag is registered with a default.
 func init() {
 	defaultCfg := filepath.Join(os.Getenv("HOME"), ".mcp-oauth2.yaml")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", defaultCfg, "path to the config file")

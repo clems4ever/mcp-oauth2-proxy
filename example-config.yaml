@@ -29,3 +29,21 @@ application:
     - write
   redirect_uris:
     - "https://claude.ai/api/mcp/auth_callback"
+
+# Optional: log in with an OpenID Connect provider (e.g. Google) in addition to
+# the password form above. Remove this block to disable OIDC login.
+#
+# Register an OAuth client with your provider and add this proxy's callback,
+#   <issuer base URL>/oauth2/oidc/callback
+# (e.g. https://localhost:8080/oauth2/oidc/callback), as an authorized redirect
+# URI. For Google: APIs & Services → Credentials → OAuth client ID (Web app).
+#
+# oidc:
+#   issuer: "https://accounts.google.com"   # OIDC issuer; discovery is automatic
+#   client_id: "xxxxxxxx.apps.googleusercontent.com"
+#   client_secret: "your-google-client-secret"
+#   # redirect_url defaults to <server.issuer>/oauth2/oidc/callback; override if needed:
+#   # redirect_url: "https://auth.example.com/oauth2/oidc/callback"
+#   scopes: ["openid", "email", "profile"]  # optional; this is the default
+#   allowed_emails:                          # only these verified emails may sign in
+#     - alice@example.com

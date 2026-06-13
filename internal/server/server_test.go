@@ -37,14 +37,14 @@ func TestNew_PanicsOnEmptyJWTSecret(t *testing.T) {
 		}
 	}()
 
-	New(cfg)
+	New(cfg, nil)
 }
 
 // TestNew_SucceedsWithJWTSecret verifies that New returns a server bound to the configured port with a handler set.
 //
 // @arg t The testing context provided by the Go test runner.
 func TestNew_SucceedsWithJWTSecret(t *testing.T) {
-	srv := New(baseConfig())
+	srv := New(baseConfig(), nil)
 	if srv == nil {
 		t.Fatal("expected a non-nil server")
 	}

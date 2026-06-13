@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/oidc"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/token"
 )
@@ -16,18 +17,20 @@ import (
 type Handler struct {
 	cfg   *config.Config
 	store *store.Store
+	oidc  *oidc.Client // nil when OIDC login is not configured
 }
 
 // New creates a Handler.
 //
 // @arg cfg The loaded server configuration backing token issuance and validation.
 // @arg st The authorization-server state store holding clients and authorization codes.
-// @return *Handler A handler wired to the given configuration and store.
+// @arg oidcClient The configured OIDC relying party, or nil when OIDC login is disabled.
+// @return *Handler A handler wired to the given configuration, store and OIDC client.
 //
 // @testcase TestMetadata_StatusOK constructs a handler via New to serve metadata.
 // @testcase TestClientCredentials_BasicAuth_Success constructs a handler via New to issue tokens.
-func New(cfg *config.Config, st *store.Store) *Handler {
-	return &Handler{cfg: cfg, store: st}
+func New(cfg *config.Config, st *store.Store, oidcClient *oidc.Client) *Handler {
+	return &Handler{cfg: cfg, store: st, oidc: oidcClient}
 }
 
 type tokenResponse struct {

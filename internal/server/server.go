@@ -6,6 +6,7 @@ import (
 
 	"github.com/clems4ever/mcp-oauth2-proxy/config"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/handler"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/oidc"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
 )
 
@@ -15,11 +16,12 @@ import (
 // an empty HMAC key would let anyone forge valid access tokens.
 //
 // @arg cfg The loaded server configuration; its jwt_secret, issuer, port and upstream settings wire the handlers.
+// @arg oidcClient The configured OIDC relying party, or nil to disable OIDC login routes.
 // @return *http.Server An HTTP server with the OAuth2 routes and authenticating reverse proxy mounted.
 //
 // @testcase TestNew_PanicsOnEmptyJWTSecret verifies that New panics when jwt_secret is empty.
 // @testcase TestNew_SucceedsWithJWTSecret verifies that New returns a server bound to the configured port with a handler set.
-func New(cfg *config.Config) *http.Server {
+func New(cfg *config.Config, oidcClient *oidc.Client) *http.Server {
 	if cfg.Server.JWTSecret == "" {
 		panic("jwt_secret must be set: refusing to sign tokens with an empty key")
 	}
@@ -36,7 +38,7 @@ func New(cfg *config.Config) *http.Server {
 		IsPublic:     cfg.Application.ClientSecret == "",
 	})
 
-	h := handler.New(cfg, st)
+	h := handler.New(cfg, st, oidcClient)
 
 	mux := http.NewServeMux()
 	// RFC 9728 – protected resource metadata (tells the client which AS to use)
@@ -47,6 +49,11 @@ func New(cfg *config.Config) *http.Server {
 	mux.HandleFunc("/oauth2/authorize", h.Authorize)
 	// RFC 6749 / 9700 – token endpoint
 	mux.HandleFunc("POST /oauth2/token", h.Token)
+	// OIDC browser login (only when an OIDC provider is configured).
+	if oidcClient != nil {
+		mux.HandleFunc("POST /oauth2/oidc/login", h.OIDCLogin)
+		mux.HandleFunc("GET /oauth2/oidc/callback", h.OIDCCallback)
+	}
 	// Catch-all: enforce Bearer auth, then proxy to the upstream MCP server.
 	mux.Handle("/", handler.Proxy(cfg, cfg.Server.UpstreamURL))
 

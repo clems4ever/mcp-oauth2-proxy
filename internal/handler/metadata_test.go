@@ -23,7 +23,7 @@ func newTestHandler() *Handler {
 			Issuer: testIssuer,
 		},
 	}
-	return New(cfg, store.New())
+	return New(cfg, store.New(), nil)
 }
 
 // TestMetadata_StatusOK verifies the metadata endpoint responds with 200 OK.

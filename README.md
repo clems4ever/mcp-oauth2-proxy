@@ -9,6 +9,7 @@ It sits in front of your MCP server, handles all OAuth flows, validates Bearer t
 - **Authorization code flow** with PKCE (S256) — used by MCP clients such as Claude
 - **Client credentials flow** — machine-to-machine access
 - Browser-based login form with bcrypt password verification
+- Optional **OpenID Connect login** (e.g. Google) with an email allowlist, alongside the password form
 - JWT access tokens (HS256) with `iss`, `aud`, `sub`, `exp` claims
 - Auto-discovery endpoints (RFC 8414 + RFC 9728)
 - Transparent reverse proxy to an upstream MCP HTTP server
@@ -69,6 +70,8 @@ Default config path: `~/.mcp-oauth2.yaml`. Override with `--config`.
 | `GET` | `/.well-known/oauth-protected-resource` | Protected resource metadata (RFC 9728) |
 | `GET/POST` | `/oauth2/authorize` | Authorization endpoint — shows login form, issues auth codes |
 | `POST` | `/oauth2/token` | Token endpoint — `authorization_code` and `client_credentials` grants |
+| `POST` | `/oauth2/oidc/login` | Starts OIDC login (only when `oidc` is configured) |
+| `GET` | `/oauth2/oidc/callback` | OIDC provider callback (only when `oidc` is configured) |
 | `*` | `/` | Reverse proxy to `upstream_url` (requires valid Bearer token) |
 
 ## Token endpoint
@@ -101,6 +104,38 @@ curl -X POST http://localhost:8080/oauth2/token \
   "scope": "read write"
 }
 ```
+
+## Google / OIDC login
+
+In addition to the password form, the browser login can authenticate users
+against any OpenID Connect provider (Google, Okta, Auth0, Entra, …). When an
+`oidc` block is present in the config, the login page shows a **"Sign in with
+Google"** button next to the username/password form. Access is restricted to an
+**email allowlist** — only verified emails you list may sign in.
+
+1. Create an OAuth client at your provider. For Google: *APIs & Services →
+   Credentials → Create OAuth client ID → Web application*.
+2. Add this proxy's callback as an authorized redirect URI:
+   `<issuer base URL>/oauth2/oidc/callback`
+   (e.g. `https://auth.example.com/oauth2/oidc/callback`).
+3. Add the `oidc` block to your config:
+
+```yaml
+oidc:
+  issuer: "https://accounts.google.com"   # OIDC issuer; endpoints are discovered automatically
+  client_id: "xxxxxxxx.apps.googleusercontent.com"
+  client_secret: "your-google-client-secret"
+  # redirect_url defaults to <server.issuer>/oauth2/oidc/callback
+  scopes: ["openid", "email", "profile"]  # optional; this is the default
+  allowed_emails:
+    - alice@example.com
+```
+
+How it works: the proxy redirects the browser to the provider, validates the
+returned ID token (signature, audience, nonce) and `email_verified`, checks the
+email against `allowed_emails`, and then issues its own authorization code — so
+the downstream MCP token exchange is unchanged. The issued access token's `sub`
+claim is the user's email.
 
 ## Flags
 

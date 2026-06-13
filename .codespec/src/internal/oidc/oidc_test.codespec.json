@@ -1,0 +1,66 @@
+{
+	"functions": [
+		{
+			"function_name": "newMockIDP",
+			"documentation_hash": "cfd31637717e0e5ddf932d878207800390f91a6ba9a9cfdb72a03c64a192900d",
+			"definition_hash": "123937fceb1a04a592376307f5c08e09c1f839d5e4479d0ac3c0b27f9b5ffe50",
+			"reviewed_at": "2026-06-13T19:36:29.915296322Z"
+		},
+		{
+			"function_name": "signIDToken",
+			"receiver": "mockIDP",
+			"documentation_hash": "9d313af84b37b57ea5921c6282ac0bbb89df199e7cb0fe4f560fac914cb48bc6",
+			"definition_hash": "fa1ae3769f8e096bb48d0391d1c2a44ea78b5523e1691afb3aa3d5ac2b22ec6f",
+			"reviewed_at": "2026-06-13T19:36:29.915502292Z"
+		},
+		{
+			"function_name": "writeJSON",
+			"documentation_hash": "d1e95cf75275e746b467ea5035762ea79145ea65df71fe83eb6f2549e8602a34",
+			"definition_hash": "5dc62317a3b8bbb1212b7998846d91c868e8ccfa28e525cf6d1747ede064b85d",
+			"reviewed_at": "2026-06-13T19:36:29.915857012Z"
+		},
+		{
+			"function_name": "newClient",
+			"receiver": "mockIDP",
+			"documentation_hash": "cd994b19736c3038a5762e3a75477ee9880af180584d88ab7188ab397b578b8e",
+			"definition_hash": "4c9aa4f765889eea87b2441400b890ee2580a651957f8a10b6b1492fd983807f",
+			"reviewed_at": "2026-06-13T19:36:29.916105984Z"
+		},
+		{
+			"function_name": "TestNew_DiscoveryError",
+			"documentation_hash": "74f6f458a03251cf4cf827b1a2b696c75c4c32382e08a7e4c89bab9ce911604d",
+			"definition_hash": "74626ac05ac97f03d3544a18ca8dfa11dbc244caed2d4756d439e42b50c29c28",
+			"reviewed_at": "2026-06-13T19:36:29.916306843Z"
+		},
+		{
+			"function_name": "TestAuthCodeURL",
+			"documentation_hash": "ec2daac9aa54ce3f18c6a9e3ece69f2f0f582f020ffc767bb1eaeb1d96a58663",
+			"definition_hash": "62c4650bb5aea193d4c257203a6acb292068b74fdfd6cc4817d35e8a05044af6",
+			"reviewed_at": "2026-06-13T19:36:29.916503702Z"
+		},
+		{
+			"function_name": "TestExchange_Success",
+			"documentation_hash": "4434c299b8f34250b5373c33b66f61e2ca4043a11b0f79cfb1101dfcd26e16e3",
+			"definition_hash": "84ed6406cf2dbbb2af27b827cf9816b32e0d794fe5078cdaffe75ff9d1009019",
+			"reviewed_at": "2026-06-13T19:36:29.916691427Z"
+		},
+		{
+			"function_name": "TestExchange_NonceMismatch",
+			"documentation_hash": "54a4527d24e401abc6083220087611917f1dd55f36aff46ba7f4fd5ca9ccf0ac",
+			"definition_hash": "f602cfee01d308bb4ad06ee421163171bf536cf5c6e29f1788bdc658c8383ba6",
+			"reviewed_at": "2026-06-13T19:36:29.916873085Z"
+		},
+		{
+			"function_name": "TestExchange_UnverifiedEmail",
+			"documentation_hash": "705f2fccd3b7c4b90eba97dc4be0ce3839f9def92677df28d137a3d761de80aa",
+			"definition_hash": "69f18d4fb82951a4024410c04506b869d28b11d5c91e604d7fd97fa2e4e6f944",
+			"reviewed_at": "2026-06-13T19:36:29.917053608Z"
+		},
+		{
+			"function_name": "TestEmailAllowed",
+			"documentation_hash": "4a738a873b71c70bf8d4bc5b0e73f7a2566bae127236d81d3aa8cf72cd8b4b4f",
+			"definition_hash": "dd6cbf9cdb88b4c3bbf161a42f3bcf4589aa08a8e88ca39982b9aa21b2664cdd",
+			"reviewed_at": "2026-06-13T19:36:29.917232384Z"
+		}
+	]
+}

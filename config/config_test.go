@@ -87,6 +87,84 @@ func TestLoad_InvalidYAML(t *testing.T) {
 	}
 }
 
+// TestLoad_OIDCDefaults verifies an OIDC block is accepted and gets default scopes and redirect_url.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestLoad_OIDCDefaults(t *testing.T) {
+	path := writeConfig(t, `
+server:
+  issuer: https://auth.example.com
+  jwt_secret: secret
+oidc:
+  issuer: https://accounts.google.com
+  client_id: cid
+  client_secret: csec
+  allowed_emails:
+    - Alice@Example.com
+`)
+	cfg, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if !cfg.OIDCEnabled() {
+		t.Fatal("expected OIDC to be enabled")
+	}
+	if cfg.OIDC.RedirectURL != "https://auth.example.com/oauth2/oidc/callback" {
+		t.Errorf("unexpected default redirect_url: %q", cfg.OIDC.RedirectURL)
+	}
+	want := []string{"openid", "email", "profile"}
+	if len(cfg.OIDC.Scopes) != len(want) {
+		t.Errorf("expected default scopes %v, got %v", want, cfg.OIDC.Scopes)
+	}
+}
+
+// TestLoad_OIDCKeepsExplicitValues verifies explicit OIDC scopes and redirect_url are preserved.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestLoad_OIDCKeepsExplicitValues(t *testing.T) {
+	path := writeConfig(t, `
+server:
+  jwt_secret: secret
+oidc:
+  issuer: https://accounts.google.com
+  client_id: cid
+  client_secret: csec
+  redirect_url: https://custom.example.com/cb
+  scopes: [openid, email]
+  allowed_emails: [a@b.com]
+`)
+	cfg, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if cfg.OIDC.RedirectURL != "https://custom.example.com/cb" {
+		t.Errorf("explicit redirect_url overwritten: %q", cfg.OIDC.RedirectURL)
+	}
+	if len(cfg.OIDC.Scopes) != 2 {
+		t.Errorf("explicit scopes overwritten: %v", cfg.OIDC.Scopes)
+	}
+}
+
+// TestLoad_OIDCMissingRequiredFields verifies that an incomplete OIDC block is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestLoad_OIDCMissingRequiredFields(t *testing.T) {
+	cases := map[string]string{
+		"no issuer":       "oidc:\n  client_id: c\n  client_secret: s\n  allowed_emails: [a@b.com]\n",
+		"no client_id":    "oidc:\n  issuer: https://i\n  client_secret: s\n  allowed_emails: [a@b.com]\n",
+		"no secret":       "oidc:\n  issuer: https://i\n  client_id: c\n  allowed_emails: [a@b.com]\n",
+		"no allowed list": "oidc:\n  issuer: https://i\n  client_id: c\n  client_secret: s\n",
+	}
+	for name, oidcBlock := range cases {
+		t.Run(name, func(t *testing.T) {
+			path := writeConfig(t, "server:\n  jwt_secret: secret\n"+oidcBlock)
+			if _, err := Load(path); err == nil {
+				t.Errorf("expected error for %q", name)
+			}
+		})
+	}
+}
+
 // TestFindUser verifies FindUser returns a matching user and nil for an unknown username.
 //
 // @arg t The testing context provided by the Go test runner.

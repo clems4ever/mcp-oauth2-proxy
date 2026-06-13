@@ -57,7 +57,7 @@ func newTokenHandler(t *testing.T) (*Handler, *store.Store) {
 			AllowedScopes: []string{"read", "write"},
 		},
 	}
-	return New(cfg, st), st
+	return New(cfg, st, nil), st
 }
 
 // postToken builds a POST /oauth2/token request with a form-encoded body.
