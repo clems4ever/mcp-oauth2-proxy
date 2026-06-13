@@ -17,6 +17,15 @@ import (
 
 // Proxy returns an http.Handler that enforces Bearer token authentication,
 // logs unauthenticated requests, and forwards authenticated ones to the upstream.
+//
+// @arg cfg The server configuration providing the JWT secret, issuer and base URL.
+// @arg upstreamURL The upstream MCP server URL to forward authenticated requests to; empty disables proxying.
+// @return http.Handler A handler that returns 401 for missing/invalid tokens and otherwise proxies to the upstream.
+//
+// @testcase TestProxy_NoToken_Returns401 verifies a missing token yields 401 with resource metadata.
+// @testcase TestProxy_InvalidToken_Returns401 verifies an invalid token yields 401 with an invalid_token error.
+// @testcase TestProxy_ValidToken_ForwardsToUpstream verifies a valid token is proxied to the upstream.
+// @testcase TestProxy_ValidToken_NoUpstream_Returns502 verifies a valid token with no upstream configured yields 502.
 func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 	var rp *httputil.ReverseProxy
 	if upstreamURL != "" {
@@ -62,6 +71,13 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 	})
 }
 
+// bearerToken extracts the raw token from an "Authorization: Bearer <token>"
+// header, returning an empty string when no such header is present.
+//
+// @arg r Incoming HTTP request whose Authorization header is inspected.
+// @return string The token following the "Bearer " prefix, or "" if absent.
+//
+// @testcase TestBearerToken verifies extraction for Bearer, non-Bearer and missing headers.
 func bearerToken(r *http.Request) string {
 	auth := r.Header.Get("Authorization")
 	if strings.HasPrefix(auth, "Bearer ") {
@@ -70,24 +86,58 @@ func bearerToken(r *http.Request) string {
 	return ""
 }
 
-// logRequest dumps the full request to stderr.
+// sensitiveHeaders are redacted from request dumps to avoid writing
+// credentials (bearer/basic tokens, cookies) to the logs.
+var sensitiveHeaders = map[string]struct{}{
+	"authorization":       {},
+	"proxy-authorization": {},
+	"cookie":              {},
+	"set-cookie":          {},
+}
+
+// logRequest dumps the request to stderr with sensitive headers redacted.
+// It consumes and restores r.Body so the request remains usable afterwards.
+//
+// @arg r Incoming HTTP request to log; its body is read (bounded) and restored.
+//
+// @testcase TestFormatRequest_RedactsSensitiveHeaders verifies the rendered dump omits credentials.
 func logRequest(r *http.Request) {
+	var body []byte
+	if r.Body != nil && r.Body != http.NoBody {
+		b, err := io.ReadAll(io.LimitReader(r.Body, 4096))
+		if err == nil {
+			body = b
+			r.Body = io.NopCloser(bytes.NewReader(b))
+		}
+	}
+	log.Print(formatRequest(r, time.Now(), body))
+}
+
+// formatRequest renders a request dump with sensitive headers redacted.
+//
+// @arg r Incoming HTTP request to render (method, target, host and headers).
+// @arg now Timestamp used in the dump header, injected for deterministic tests.
+// @arg body The already-read request body to append, or nil/empty for none.
+// @return string A human-readable request dump with sensitive headers replaced by [REDACTED].
+//
+// @testcase TestFormatRequest_RedactsSensitiveHeaders verifies credentials are redacted while ordinary headers and the body remain.
+func formatRequest(r *http.Request, now time.Time, body []byte) string {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "\n────────────────────────────────────────\n")
-	fmt.Fprintf(&buf, "[%s] UNAUTHENTICATED %s %s\n", time.Now().Format(time.RFC3339), r.Method, r.RequestURI)
+	fmt.Fprintf(&buf, "[%s] UNAUTHENTICATED %s %s\n", now.Format(time.RFC3339), r.Method, r.RequestURI)
 	fmt.Fprintf(&buf, "Host: %s\n", r.Host)
 	for name, vals := range r.Header {
+		if _, ok := sensitiveHeaders[strings.ToLower(name)]; ok {
+			fmt.Fprintf(&buf, "%s: [REDACTED]\n", name)
+			continue
+		}
 		for _, v := range vals {
 			fmt.Fprintf(&buf, "%s: %s\n", name, v)
 		}
 	}
-	if r.Body != nil && r.Body != http.NoBody {
-		body, err := io.ReadAll(io.LimitReader(r.Body, 4096))
-		if err == nil && len(body) > 0 {
-			r.Body = io.NopCloser(bytes.NewReader(body))
-			fmt.Fprintf(&buf, "\n%s\n", body)
-		}
+	if len(body) > 0 {
+		fmt.Fprintf(&buf, "\n%s\n", body)
 	}
 	fmt.Fprintf(&buf, "────────────────────────────────────────\n")
-	log.Print(buf.String())
+	return buf.String()
 }

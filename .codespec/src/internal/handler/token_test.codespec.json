@@ -1,0 +1,136 @@
+{
+	"functions": [
+		{
+			"function_name": "newTokenHandler",
+			"documentation_hash": "efde9adfd7a97bbdddd988fb7c0b55768c0c2918a021f59c57fd2cbc138a5272",
+			"definition_hash": "c5012e52da30bea6ff9eb203d76c15bfb3de2144359c6333367365f797831219",
+			"reviewed_at": "2026-06-13T17:28:53.80614988Z"
+		},
+		{
+			"function_name": "postToken",
+			"documentation_hash": "f45fb4867339cd74470275865a727f856f8a404d228a8e23973e5372e7becfd1",
+			"definition_hash": "4d7b1ec2f217040887e382325cb092d779d2ad379d63b566da49709d574c1fd3",
+			"reviewed_at": "2026-06-13T17:28:53.806994146Z"
+		},
+		{
+			"function_name": "decodeToken",
+			"documentation_hash": "aee6ad35804c46c46b8dc4acbc07143c477504ec762f83840fa12fb039cb40bf",
+			"definition_hash": "72d0ca98f59c13b39b287eed3d018e6a70c5d6924bd0054ecf93689917ac4de8",
+			"reviewed_at": "2026-06-13T17:28:53.807480568Z"
+		},
+		{
+			"function_name": "TestToken_UnsupportedGrant",
+			"documentation_hash": "b046d514ec5694c7950c49207d70888833afa72a04a941374f8a452b122ea94d",
+			"definition_hash": "2149b57a96e6c57f08192022570857e554dcd72d066f115573cd9044a052c1a8",
+			"reviewed_at": "2026-06-13T17:28:53.807943664Z"
+		},
+		{
+			"function_name": "TestClientCredentials_BasicAuth_Success",
+			"documentation_hash": "298d276a9f7982e2357320c0b96ff349b768a1f4750aee901c33bd4e7e82c113",
+			"definition_hash": "8705c1647a33617ee1bf6bd8938ee8f7439bd5bfae0a41bbb23e4fa10ccf30b3",
+			"reviewed_at": "2026-06-13T17:28:53.808427868Z"
+		},
+		{
+			"function_name": "TestClientCredentials_FormCredentials_Success",
+			"documentation_hash": "a5938fbbf66fc58ed8c6ca712544350a5f77a1f71713bcdafc8cddd6ba8e0222",
+			"definition_hash": "87098fd1218332f05cb2e2d2f877b05c2c83a94e8a16a48db309e473d4e6a4be",
+			"reviewed_at": "2026-06-13T17:28:53.808900839Z"
+		},
+		{
+			"function_name": "TestClientCredentials_MissingClientID",
+			"documentation_hash": "1d119cef3501cee6079489e7322c3e1001942616db4bdb291e7165d6a0af8ae9",
+			"definition_hash": "3b83c185cd1408d614cb910c6374b5656791fefde5115cb8afeb8d0ad653fe3e",
+			"reviewed_at": "2026-06-13T17:28:53.809595097Z"
+		},
+		{
+			"function_name": "TestClientCredentials_WrongSecret",
+			"documentation_hash": "459cd67033a32aca19ff625b6ba8d2d05552de5e5b41fb99c2690b5ac49bfc8a",
+			"definition_hash": "153b09c165f241877fd4fd12ea54a3f4408eea960ac8cc9814eb23ecbe1397e8",
+			"reviewed_at": "2026-06-13T17:28:53.810024936Z"
+		},
+		{
+			"function_name": "TestClientCredentials_ScopeEscalationFiltered",
+			"documentation_hash": "95f92f88fa2838cb9a338e1fb321caeb6bbfe85b1e8ab2bf3e1e5f2f0bb86e6a",
+			"definition_hash": "b54b2408ef1896cfb4bf8e0d5bc97be39a0d2655f371a9a47eabccc55d4c8040",
+			"reviewed_at": "2026-06-13T17:28:53.810376352Z"
+		},
+		{
+			"function_name": "seedAuthCode",
+			"documentation_hash": "e94eb886c7f6d260bd14c401c1281caac4b20ef025ffe0d09534cc07ef400241",
+			"definition_hash": "36707df060c5d34f289c6e9b71ac758ddde1e02506996471c8e076c5f8fc0ad0",
+			"reviewed_at": "2026-06-13T17:28:53.810697062Z"
+		},
+		{
+			"function_name": "acForm",
+			"documentation_hash": "1b5f66927a9c492a099bb7baceeda6e5aef2f417df2b915e928a8c21385a62b6",
+			"definition_hash": "e4235440e59e0ad6c7df83e8a8a2875ebaae0f6e6b6425067eb5420a28af70c0",
+			"reviewed_at": "2026-06-13T17:28:53.811012602Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_PublicClient_Success",
+			"documentation_hash": "6b40bf1a122348f2a7bd57a53852fc22d1f4448b3c565e2f08a2850d1a49e951",
+			"definition_hash": "5076b554568b775005679da837dde00856a75b5ff542dcc26c70b5571cb1f39b",
+			"reviewed_at": "2026-06-13T17:28:53.811436833Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_ConfidentialClient_Success",
+			"documentation_hash": "122a1a097e4371b152845c27fe09a9bd956534288622a7878a818b0c51a4d58d",
+			"definition_hash": "cf9abc6ea88d0df0b3f3c27b688e89dc9512da4b259dd67797cc8ed8069f857c",
+			"reviewed_at": "2026-06-13T17:28:53.811926938Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_ConfidentialClient_WrongSecret",
+			"documentation_hash": "69ccb941dfa41df6e2980a548e09d5b1aebc5bd916f6965ee496bd4e89840aa7",
+			"definition_hash": "9a51a6b7e1117dceaf486a69bcf02fbbbe9e3784b07d3a28c8bdc5f396f4bf88",
+			"reviewed_at": "2026-06-13T17:28:53.812264929Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_UnknownClient",
+			"documentation_hash": "1026f731fcf92676e34a95ed147c8fbe0dc5511566a26934a3f123bda2a0441d",
+			"definition_hash": "7d9ee092905c10f82f29e74d9c4e881f1f8365b7ba51ccdbdd4b8fcbf8fe058d",
+			"reviewed_at": "2026-06-13T17:28:53.812589118Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_MissingCode",
+			"documentation_hash": "71f6b62e41b0f56d52488aa9b6c7b0eccad411c053d1a5ec717f3a449a782fb5",
+			"definition_hash": "b1762a11a14c6dd103caec5568f32cbfac6e3f2b03f5da902c4f9bb42b989eb4",
+			"reviewed_at": "2026-06-13T17:28:53.81298896Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_UnknownCode",
+			"documentation_hash": "5fee192c66b268ee69d7a25c920dec41136bc8fbb66c4562841a682c896c0953",
+			"definition_hash": "07537871d1ded51bc36d8023d73a238c3451e71efc30c7c58e63450d47f722f9",
+			"reviewed_at": "2026-06-13T17:28:53.813522084Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_ClientIDMismatch",
+			"documentation_hash": "613b6f1bb63ac9b8040f2e97da5e648165f7e67b05e7bb8bab87a23c9d1a18ca",
+			"definition_hash": "d3714507ea2011a388983bfde529c832fbe15389984f31bb812077e0679e0064",
+			"reviewed_at": "2026-06-13T17:28:53.814038868Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_RedirectURIMismatch",
+			"documentation_hash": "e3accde570919738b739feb32f22d2e9bfabc0baf964ebf01be3a8e2a28e4b46",
+			"definition_hash": "2785f3618924487de1c56bb0e61777a80ef0429a12031f0083fe1d31aba166ef",
+			"reviewed_at": "2026-06-13T17:28:53.814417266Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_BadPKCE",
+			"documentation_hash": "5500962a82d026dbc172ea5b27bdd685ce489920d6f567a163cdba42c0ead7f5",
+			"definition_hash": "ce37d4f609d47ef7cc1651035a117cb808a2f8d295fe1b1fc864bbb61f610152",
+			"reviewed_at": "2026-06-13T17:28:53.814790744Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_CodeIsSingleUse",
+			"documentation_hash": "1b2bd11f01d09d3651e5af2c73f1dc23d594ed0229ce894d0c0fabfc4b839907",
+			"definition_hash": "41df03cefdf4272b92dc426410760bbcc0622da5cebfe88e1e842e38c6c1f54d",
+			"reviewed_at": "2026-06-13T17:28:53.815151675Z"
+		},
+		{
+			"function_name": "TestAuthorizationCode_ExpiredCode",
+			"documentation_hash": "921ed94d7280f7fd3fecd65cc78a2a4e1d3142cc4f3469f4460c15eee1604925",
+			"definition_hash": "a551567cbde23aad84d1e79a433a606afb17ddc42be85efc75bffbac950285e6",
+			"reviewed_at": "2026-06-13T17:28:53.815659085Z"
+		}
+	]
+}

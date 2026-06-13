@@ -10,7 +10,20 @@ import (
 )
 
 // New builds and returns a configured HTTP server.
+//
+// It panics if jwt_secret is not configured: signing and verifying tokens with
+// an empty HMAC key would let anyone forge valid access tokens.
+//
+// @arg cfg The loaded server configuration; its jwt_secret, issuer, port and upstream settings wire the handlers.
+// @return *http.Server An HTTP server with the OAuth2 routes and authenticating reverse proxy mounted.
+//
+// @testcase TestNew_PanicsOnEmptyJWTSecret verifies that New panics when jwt_secret is empty.
+// @testcase TestNew_SucceedsWithJWTSecret verifies that New returns a server bound to the configured port with a handler set.
 func New(cfg *config.Config) *http.Server {
+	if cfg.Server.JWTSecret == "" {
+		panic("jwt_secret must be set: refusing to sign tokens with an empty key")
+	}
+
 	st := store.New()
 
 	// Seed the statically-configured application so it is available to the
@@ -30,7 +43,6 @@ func New(cfg *config.Config) *http.Server {
 	mux.HandleFunc("GET /.well-known/oauth-protected-resource", h.ProtectedResource)
 	// RFC 8414 – authorization server metadata discovery
 	mux.HandleFunc("GET /.well-known/oauth-authorization-server", h.Metadata)
-	// RFC 7591 – dynamic client registration
 	// RFC 6749 / 9700 – authorization endpoint (GET = show login, POST = submit)
 	mux.HandleFunc("/oauth2/authorize", h.Authorize)
 	// RFC 6749 / 9700 – token endpoint

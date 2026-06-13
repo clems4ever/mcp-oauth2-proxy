@@ -1,0 +1,28 @@
+{
+	"functions": [
+		{
+			"function_name": "Proxy",
+			"documentation_hash": "b2f47c74d013a12461028eb398b242d02c72780042e8c2e41633c966610e1657",
+			"definition_hash": "5c70d6ef77b4a04c257846d77333b3c840a9f750b4275bfea2ab1370f56948b9",
+			"reviewed_at": "2026-06-13T17:28:53.80328581Z"
+		},
+		{
+			"function_name": "bearerToken",
+			"documentation_hash": "a0d706bc10804fbd9012fe7eafa342aedd195bf691ab0a5523631919ace6ad8a",
+			"definition_hash": "e6fdd1bd7c1d6c210e3b3434b31b4a195a841992866957ba2664752a96b05367",
+			"reviewed_at": "2026-06-13T17:28:53.803573002Z"
+		},
+		{
+			"function_name": "logRequest",
+			"documentation_hash": "76ef0c129f8d0333c9550ccb0ade98f7d2b635b2be26d7eff47e1436063b6ff4",
+			"definition_hash": "9ef5f546b5f92d6fefdc568c5d18c9a110717c008ddce513bdac0a6cdf679c61",
+			"reviewed_at": "2026-06-13T17:28:53.803832642Z"
+		},
+		{
+			"function_name": "formatRequest",
+			"documentation_hash": "fd33aa76854dba83eb314306e205382995e0daed80818e6b8a2076d45f3ce5fd",
+			"definition_hash": "98ae8269031a3c02cfedadfe24d58b2b1fd2c6e6f676f3ba489f60d2da332661",
+			"reviewed_at": "2026-06-13T17:28:53.804056769Z"
+		}
+	]
+}

@@ -1,0 +1,22 @@
+{
+	"functions": [
+		{
+			"function_name": "baseConfig",
+			"documentation_hash": "4f1200ed3cf2c365ae3a50b48d229ede830d2e650e0abb600d3e00bb94394d4a",
+			"definition_hash": "797c79c6ad2b140bd92b9ddfa8667dff22ae93342718e99a15592b8c6b3da2b5",
+			"reviewed_at": "2026-06-13T17:28:53.789428238Z"
+		},
+		{
+			"function_name": "TestNew_PanicsOnEmptyJWTSecret",
+			"documentation_hash": "5499a5d97d3e9f96d3a89e771a1d89eca79284cbadc93d0ef629262a2c072449",
+			"definition_hash": "464271625458d7e8ae12586d6fab8c5935e96cf53a1cc58b4a0f8729ea535a24",
+			"reviewed_at": "2026-06-13T17:28:53.789793258Z"
+		},
+		{
+			"function_name": "TestNew_SucceedsWithJWTSecret",
+			"documentation_hash": "989e8a5bb6c4a2f505043286ccbdcc406dab07fb655de1335a341a9b5d15a0aa",
+			"definition_hash": "f315a247f95fc9319058b153b844fb769785ebb8af218e8144d5298065efe6f8",
+			"reviewed_at": "2026-06-13T17:28:53.790067807Z"
+		}
+	]
+}

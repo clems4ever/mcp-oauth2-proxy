@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/clems4ever/mcp-oauth2-proxy/config"
@@ -12,6 +13,10 @@ import (
 
 const testIssuer = "https://auth.example.com"
 
+// newTestHandler builds a Handler backed by an empty store and a minimal
+// configuration with only the issuer set, for metadata endpoint tests.
+//
+// @return *Handler A handler suitable for exercising the metadata endpoints.
 func newTestHandler() *Handler {
 	cfg := &config.Config{
 		Server: config.ServerConfig{
@@ -21,6 +26,9 @@ func newTestHandler() *Handler {
 	return New(cfg, store.New())
 }
 
+// TestMetadata_StatusOK verifies the metadata endpoint responds with 200 OK.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestMetadata_StatusOK(t *testing.T) {
 	h := newTestHandler()
 	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-authorization-server", nil)
@@ -33,6 +41,9 @@ func TestMetadata_StatusOK(t *testing.T) {
 	}
 }
 
+// TestMetadata_ContentType verifies the metadata endpoint sets a JSON content type.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestMetadata_ContentType(t *testing.T) {
 	h := newTestHandler()
 	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-authorization-server", nil)
@@ -46,6 +57,9 @@ func TestMetadata_ContentType(t *testing.T) {
 	}
 }
 
+// TestMetadata_Body verifies the issuer, endpoint and supported-capability fields of the metadata document.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestMetadata_Body(t *testing.T) {
 	h := newTestHandler()
 	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-authorization-server", nil)
@@ -66,9 +80,6 @@ func TestMetadata_Body(t *testing.T) {
 	}
 	if resp.TokenEndpoint != testIssuer+"/oauth2/token" {
 		t.Errorf("unexpected TokenEndpoint: %q", resp.TokenEndpoint)
-	}
-	if resp.RegistrationEndpoint != testIssuer+"/oauth2/register" {
-		t.Errorf("unexpected RegistrationEndpoint: %q", resp.RegistrationEndpoint)
 	}
 
 	if len(resp.ResponseTypesSupported) != 1 || resp.ResponseTypesSupported[0] != "code" {
@@ -99,6 +110,26 @@ func TestMetadata_Body(t *testing.T) {
 	}
 }
 
+// TestMetadata_NoRegistrationEndpoint verifies the unimplemented registration endpoint is not advertised.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestMetadata_NoRegistrationEndpoint(t *testing.T) {
+	h := newTestHandler()
+	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-authorization-server", nil)
+	rr := httptest.NewRecorder()
+
+	h.Metadata(rr, req)
+
+	// Dynamic client registration is not implemented, so the endpoint must not
+	// be advertised.
+	if strings.Contains(rr.Body.String(), "registration_endpoint") {
+		t.Errorf("metadata must not advertise registration_endpoint, got: %s", rr.Body.String())
+	}
+}
+
+// TestProtectedResource_StatusOK verifies the protected-resource endpoint responds with 200 OK.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestProtectedResource_StatusOK(t *testing.T) {
 	h := newTestHandler()
 	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-protected-resource", nil)
@@ -111,6 +142,9 @@ func TestProtectedResource_StatusOK(t *testing.T) {
 	}
 }
 
+// TestProtectedResource_ContentType verifies the protected-resource endpoint sets a JSON content type.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestProtectedResource_ContentType(t *testing.T) {
 	h := newTestHandler()
 	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-protected-resource", nil)
@@ -124,6 +158,9 @@ func TestProtectedResource_ContentType(t *testing.T) {
 	}
 }
 
+// TestProtectedResource_Body verifies the resource, authorization_servers and bearer_methods_supported fields.
+//
+// @arg t The testing context provided by the Go test runner.
 func TestProtectedResource_Body(t *testing.T) {
 	h := newTestHandler()
 	req := httptest.NewRequest(http.MethodGet, "/.well-known/oauth-protected-resource", nil)

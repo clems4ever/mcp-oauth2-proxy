@@ -19,6 +19,13 @@ type Handler struct {
 }
 
 // New creates a Handler.
+//
+// @arg cfg The loaded server configuration backing token issuance and validation.
+// @arg st The authorization-server state store holding clients and authorization codes.
+// @return *Handler A handler wired to the given configuration and store.
+//
+// @testcase TestMetadata_StatusOK constructs a handler via New to serve metadata.
+// @testcase TestClientCredentials_BasicAuth_Success constructs a handler via New to issue tokens.
 func New(cfg *config.Config, st *store.Store) *Handler {
 	return &Handler{cfg: cfg, store: st}
 }
@@ -35,7 +42,15 @@ type errorResponse struct {
 	ErrorDescription string `json:"error_description,omitempty"`
 }
 
-// Token handles POST /oauth2/token.
+// Token handles POST /oauth2/token, dispatching to the client_credentials or
+// authorization_code grant handler based on the grant_type form value.
+//
+// @arg w HTTP response writer the token or error JSON is written to.
+// @arg r Incoming token request carrying the grant_type and grant parameters.
+//
+// @testcase TestToken_UnsupportedGrant verifies an unknown grant_type is rejected with 400.
+// @testcase TestClientCredentials_BasicAuth_Success verifies the client_credentials grant is routed and issues a token.
+// @testcase TestAuthorizationCode_PublicClient_Success verifies the authorization_code grant is routed and issues a token.
 func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Printf("[TOKEN] failed to parse form: %v", err)
@@ -56,6 +71,18 @@ func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleClientCredentials processes the OAuth 2.0 client_credentials grant:
+// it authenticates the configured application (via Basic auth or form fields)
+// and issues an access token for the granted, allowed scopes.
+//
+// @arg w HTTP response writer the token or error JSON is written to.
+// @arg r Token request carrying client credentials and the optional requested scope.
+//
+// @testcase TestClientCredentials_BasicAuth_Success verifies a token is issued for valid Basic-auth credentials.
+// @testcase TestClientCredentials_FormCredentials_Success verifies credentials may be supplied as form fields.
+// @testcase TestClientCredentials_MissingClientID verifies a missing client_id yields 401.
+// @testcase TestClientCredentials_WrongSecret verifies an invalid secret yields 401.
+// @testcase TestClientCredentials_ScopeEscalationFiltered verifies scopes outside allowed_scopes are filtered out.
 func (h *Handler) handleClientCredentials(w http.ResponseWriter, r *http.Request) {
 	clientID, clientSecret, ok := r.BasicAuth()
 	if !ok {
@@ -100,6 +127,25 @@ func (h *Handler) handleClientCredentials(w http.ResponseWriter, r *http.Request
 	})
 }
 
+// handleAuthorizationCode processes the OAuth 2.1 authorization_code grant:
+// it authenticates the client, consumes the single-use authorization code,
+// verifies the client binding, redirect_uri and PKCE challenge, then issues
+// an access token for the code's subject and scopes.
+//
+// @arg w HTTP response writer the token or error JSON is written to.
+// @arg r Token request carrying the code, redirect_uri, code_verifier and client credentials.
+//
+// @testcase TestAuthorizationCode_PublicClient_Success verifies a public client (PKCE only) can exchange a code.
+// @testcase TestAuthorizationCode_ConfidentialClient_Success verifies a confidential client with the correct secret can exchange a code.
+// @testcase TestAuthorizationCode_ConfidentialClient_WrongSecret verifies a wrong client secret yields 401.
+// @testcase TestAuthorizationCode_UnknownClient verifies an unknown client yields 401.
+// @testcase TestAuthorizationCode_MissingCode verifies a missing code or verifier yields 400.
+// @testcase TestAuthorizationCode_UnknownCode verifies an unknown code yields 400.
+// @testcase TestAuthorizationCode_ClientIDMismatch verifies a code bound to another client is rejected.
+// @testcase TestAuthorizationCode_RedirectURIMismatch verifies a mismatched redirect_uri is rejected.
+// @testcase TestAuthorizationCode_BadPKCE verifies a wrong code_verifier fails PKCE.
+// @testcase TestAuthorizationCode_CodeIsSingleUse verifies a code cannot be replayed.
+// @testcase TestAuthorizationCode_ExpiredCode verifies an expired code is rejected.
 func (h *Handler) handleAuthorizationCode(w http.ResponseWriter, r *http.Request) {
 	clientID, clientSecret, ok := r.BasicAuth()
 	if !ok {
@@ -131,7 +177,9 @@ func (h *Handler) handleAuthorizationCode(w http.ResponseWriter, r *http.Request
 	code := r.FormValue("code")
 	redirectURI := r.FormValue("redirect_uri")
 	codeVerifier := r.FormValue("code_verifier")
-	log.Printf("[TOKEN/ac] code=%q redirect_uri=%q code_verifier_len=%d", code, redirectURI, len(codeVerifier))
+	// Never log the authorization code or PKCE verifier — they are short-lived
+	// credentials that could be replayed if logs leak.
+	log.Printf("[TOKEN/ac] redirect_uri=%q code_len=%d code_verifier_len=%d", redirectURI, len(code), len(codeVerifier))
 	if code == "" || codeVerifier == "" {
 		log.Printf("[TOKEN/ac] missing code or code_verifier")
 		writeError(w, "invalid_request", "code and code_verifier are required", http.StatusBadRequest)
@@ -140,7 +188,7 @@ func (h *Handler) handleAuthorizationCode(w http.ResponseWriter, r *http.Request
 
 	ac := h.store.ConsumeAuthCode(code)
 	if ac == nil {
-		log.Printf("[TOKEN/ac] code not found or expired: %q", code)
+		log.Printf("[TOKEN/ac] authorization code not found or expired")
 		writeError(w, "invalid_grant", "invalid or expired authorization code", http.StatusBadRequest)
 		return
 	}
@@ -155,7 +203,7 @@ func (h *Handler) handleAuthorizationCode(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if !verifyPKCE(ac.CodeChallenge, codeVerifier) {
-		log.Printf("[TOKEN/ac] PKCE failed: challenge=%q verifier=%q", ac.CodeChallenge, codeVerifier)
+		log.Printf("[TOKEN/ac] PKCE verification failed for client_id=%q", clientID)
 		writeError(w, "invalid_grant", "PKCE verification failed", http.StatusBadRequest)
 		return
 	}
@@ -178,13 +226,28 @@ func (h *Handler) handleAuthorizationCode(w http.ResponseWriter, r *http.Request
 	})
 }
 
-// secureCompare prevents timing-based secret leakage.
+// secureCompare reports whether a and b are equal using a constant-time
+// comparison, preventing timing-based secret leakage.
+//
+// @arg a First string to compare (e.g. an expected secret).
+// @arg b Second string to compare (e.g. a presented secret).
+// @return bool True if the two strings are byte-for-byte equal.
+//
+// @testcase TestClientCredentials_WrongSecret verifies a mismatching secret is rejected.
+// @testcase TestAuthorizationCode_ConfidentialClient_WrongSecret verifies a mismatching client secret is rejected.
 func secureCompare(a, b string) bool {
 	return subtle.ConstantTimeCompare([]byte(a), []byte(b)) == 1
 }
 
 // filterScopes returns the intersection of allowed and requested scopes.
 // If no scopes are requested, all allowed scopes are granted.
+//
+// @arg allowed The scopes the application is permitted to receive.
+// @arg requested The scopes asked for in the request; empty means "all allowed".
+// @return []string The granted scopes: the requested scopes restricted to the allowed set.
+//
+// @testcase TestClientCredentials_ScopeEscalationFiltered verifies disallowed scopes are dropped.
+// @testcase TestAuthorizePOST_ScopeEscalation_Filtered verifies disallowed scopes are dropped during the auth code flow.
 func filterScopes(allowed, requested []string) []string {
 	if len(requested) == 0 {
 		return allowed
@@ -202,12 +265,31 @@ func filterScopes(allowed, requested []string) []string {
 	return granted
 }
 
+// writeJSON serialises v as JSON to w with the given HTTP status code and an
+// application/json content type.
+//
+// @arg w HTTP response writer to write the JSON body to.
+// @arg status HTTP status code to set on the response.
+// @arg v Value to serialise as the JSON response body.
+//
+// @testcase TestClientCredentials_BasicAuth_Success verifies a JSON token body is written on success.
+// @testcase TestMetadata_ContentType verifies the application/json content type is set.
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
 }
 
+// writeError writes an OAuth 2.0 error response as JSON with a no-store cache
+// directive and the given HTTP status code.
+//
+// @arg w HTTP response writer to write the error body to.
+// @arg errCode OAuth 2.0 error code (e.g. invalid_client, invalid_grant).
+// @arg desc Human-readable error description; omitted from the body when empty.
+// @arg status HTTP status code to set on the response.
+//
+// @testcase TestToken_UnsupportedGrant verifies an error body is written for an unsupported grant.
+// @testcase TestClientCredentials_MissingClientID verifies an error body is written when authentication is missing.
 func writeError(w http.ResponseWriter, errCode, desc string, status int) {
 	w.Header().Set("Cache-Control", "no-store")
 	writeJSON(w, status, errorResponse{Error: errCode, ErrorDescription: desc})
