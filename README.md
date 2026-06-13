@@ -112,5 +112,6 @@ curl -X POST http://localhost:8080/oauth2/token \
 
 - PKCE with `S256` is required for all authorization code flows (OAuth 2.1)
 - User passwords must be stored as bcrypt hashes
-- Set a strong random `jwt_secret` in production
+- A `jwt_secret` is **required**: the server refuses to start with an empty one. Use a strong random value in production
 - The `issuer` value is taken from config — request `Host` headers are never trusted
+- The proxy serves plain HTTP; terminate TLS in front of it (e.g. a reverse proxy), since tokens and passwords would otherwise travel in cleartext
