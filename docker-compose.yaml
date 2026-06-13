@@ -1,0 +1,27 @@
+services:
+  mcp-oauth2-proxy:
+    # Build from the local source. To use the published image instead, comment
+    # out `build` and uncomment `image` below.
+    build: .
+    # image: ghcr.io/clems4ever/mcp-oauth2-proxy:latest
+    container_name: mcp-oauth2-proxy
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount your config read-only. Copy example-config.yaml and edit it.
+      - ./example-config.yaml:/config.yaml:ro
+    command: ["--config", "/config.yaml"]
+
+  # Example upstream MCP server the proxy forwards authenticated traffic to.
+  # Replace this with your real MCP HTTP server, then set
+  #   upstream_url: "http://mcp-server:9090"
+  # in your config (inside the compose network, reach other services by their
+  # service name — NOT localhost, which resolves to the proxy container itself).
+  #
+  # mcp-server:
+  #   image: your-org/your-mcp-server:latest
+  #   container_name: mcp-server
+  #   restart: unless-stopped
+  #   expose:
+  #     - "9090"

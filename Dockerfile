@@ -15,4 +15,6 @@ FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /mcp-oauth2-proxy /mcp-oauth2-proxy
 
+EXPOSE 8080
+
 ENTRYPOINT ["/mcp-oauth2-proxy"]

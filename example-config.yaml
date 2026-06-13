@@ -8,6 +8,12 @@ server:
 
 # Human users for the authorization code flow.
 # MCP clients (e.g. Claude) redirect the user here to authenticate.
+#
+# Passwords are stored as bcrypt hashes, never in plaintext. Generate one with:
+#   htpasswd -bnBC 10 "" 'your-password' | tr -d ':\n'    # (apache2-utils)
+#   caddy hash-password --plaintext 'your-password'        # (if you have Caddy)
+#   python3 -c 'import bcrypt; print(bcrypt.hashpw(b"your-password", bcrypt.gensalt()).decode())'
+# Paste the resulting "$2a$..." / "$2b$..." string as the password value below.
 users:
   - username: alice
     password: "$2a$10$Qjn9yuZMi4G2zgDXQk0vp.ig2f702c3GzH4GHVF4LZQnicuO00Q2O"  # alice-password
