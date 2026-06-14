@@ -40,8 +40,9 @@ server:
   port: 8080
   issuer: "https://auth.example.com"   # public base URL — must match what clients see
   jwt_secret: "change-me-in-production"
-  token_ttl: 3600       # access token lifetime, seconds
-  auth_code_ttl: 300    # authorization code lifetime, seconds
+  token_ttl: 3600           # access token lifetime, seconds
+  auth_code_ttl: 300        # authorization code lifetime, seconds
+  refresh_token_ttl: 2592000 # refresh token lifetime, seconds (default 30 days)
   upstream_url: "http://localhost:9090" # MCP HTTP server to proxy authenticated requests to
 
 # Human users for the authorization code flow.
@@ -63,6 +64,9 @@ application:
 
 Default config path: `~/.mcp-oauth2.yaml`. Override with `--config`.
 
+Two optional blocks are documented in their own sections below: `oidc` (sign in
+with Google / any OIDC provider) and `storage` (persist refresh tokens to disk).
+
 ## Endpoints
 
 | Method | Path | Description |
@@ -70,7 +74,7 @@ Default config path: `~/.mcp-oauth2.yaml`. Override with `--config`.
 | `GET` | `/.well-known/oauth-authorization-server` | Authorization server metadata (RFC 8414) |
 | `GET` | `/.well-known/oauth-protected-resource` | Protected resource metadata (RFC 9728) |
 | `GET/POST` | `/oauth2/authorize` | Authorization endpoint — shows login form, issues auth codes |
-| `POST` | `/oauth2/token` | Token endpoint — `authorization_code` and `client_credentials` grants |
+| `POST` | `/oauth2/token` | Token endpoint — `authorization_code`, `client_credentials` and `refresh_token` grants |
 | `POST` | `/oauth2/oidc/login` | Starts OIDC login (only when `oidc` is configured) |
 | `GET` | `/oauth2/oidc/callback` | OIDC provider callback (only when `oidc` is configured) |
 | `*` | `/` | Reverse proxy to `upstream_url` (requires valid Bearer token) |

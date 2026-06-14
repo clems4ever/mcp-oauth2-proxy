@@ -3,6 +3,7 @@ package handler
 import (
 	"crypto/rand"
 	"crypto/sha256"
+	_ "embed"
 	"encoding/base64"
 	"encoding/hex"
 	"html/template"
@@ -16,57 +17,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var loginTmpl = template.Must(template.New("login").Parse(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sign in</title>
-  <style>
-    body{font-family:system-ui,sans-serif;max-width:380px;margin:80px auto;padding:0 1.5rem}
-    h2{margin-bottom:1.5rem}
-    label{display:block;margin-bottom:.25rem;font-size:.9rem;color:#555}
-    input[type=text],input[type=password]{width:100%;padding:.55rem .75rem;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;margin-bottom:1rem;font-size:1rem}
-    button{width:100%;padding:.65rem;background:#0070f3;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:1rem;font-weight:600}
-    button:hover{background:#005ed4}
-    button.google{background:#fff;color:#3c4043;border:1px solid #ccc}
-    button.google:hover{background:#f7f8f8}
-    .error{background:#fff0f0;border:1px solid #f5c6c6;color:#c00;border-radius:6px;padding:.6rem .9rem;margin-bottom:1rem;font-size:.9rem}
-    .divider{display:flex;align-items:center;text-align:center;color:#888;font-size:.8rem;margin:1.25rem 0}
-    .divider::before,.divider::after{content:"";flex:1;border-bottom:1px solid #e0e0e0}
-    .divider::before{margin-right:.75rem}.divider::after{margin-left:.75rem}
-  </style>
-</head>
-<body>
-  <h2>Sign in</h2>
-  {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
-  <form method="POST" action="/oauth2/authorize">
-    <input type="hidden" name="client_id"             value="{{.ClientID}}">
-    <input type="hidden" name="redirect_uri"          value="{{.RedirectURI}}">
-    <input type="hidden" name="scope"                 value="{{.Scope}}">
-    <input type="hidden" name="state"                 value="{{.State}}">
-    <input type="hidden" name="code_challenge"        value="{{.CodeChallenge}}">
-    <input type="hidden" name="code_challenge_method" value="{{.CodeChallengeMethod}}">
-    <label for="u">Username</label>
-    <input id="u" name="username" type="text" autocomplete="username" autofocus>
-    <label for="p">Password</label>
-    <input id="p" name="password" type="password" autocomplete="current-password">
-    <button type="submit">Sign in</button>
-  </form>
-  {{if .OIDCEnabled}}
-  <div class="divider">or</div>
-  <form method="POST" action="/oauth2/oidc/login">
-    <input type="hidden" name="client_id"             value="{{.ClientID}}">
-    <input type="hidden" name="redirect_uri"          value="{{.RedirectURI}}">
-    <input type="hidden" name="scope"                 value="{{.Scope}}">
-    <input type="hidden" name="state"                 value="{{.State}}">
-    <input type="hidden" name="code_challenge"        value="{{.CodeChallenge}}">
-    <input type="hidden" name="code_challenge_method" value="{{.CodeChallengeMethod}}">
-    <button type="submit" class="google">Sign in with Google</button>
-  </form>
-  {{end}}
-</body>
-</html>`))
+//go:embed templates/login.html
+var loginHTML string
+
+var loginTmpl = template.Must(template.New("login").Parse(loginHTML))
 
 // Authorize handles GET and POST /oauth2/authorize.
 //
