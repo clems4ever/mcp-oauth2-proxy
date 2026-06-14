@@ -16,17 +16,16 @@ import (
 // an empty HMAC key would let anyone forge valid access tokens.
 //
 // @arg cfg The loaded server configuration; its jwt_secret, issuer, port and upstream settings wire the handlers.
+// @arg st The authorization-server state store (in-memory or persistent).
 // @arg oidcClient The configured OIDC relying party, or nil to disable OIDC login routes.
 // @return *http.Server An HTTP server with the OAuth2 routes and authenticating reverse proxy mounted.
 //
 // @testcase TestNew_PanicsOnEmptyJWTSecret verifies that New panics when jwt_secret is empty.
 // @testcase TestNew_SucceedsWithJWTSecret verifies that New returns a server bound to the configured port with a handler set.
-func New(cfg *config.Config, oidcClient *oidc.Client) *http.Server {
+func New(cfg *config.Config, st *store.Store, oidcClient *oidc.Client) *http.Server {
 	if cfg.Server.JWTSecret == "" {
 		panic("jwt_secret must be set: refusing to sign tokens with an empty key")
 	}
-
-	st := store.New()
 
 	// Seed the statically-configured application so it is available to the
 	// authorization code flow (authorize endpoint checks the store).

@@ -10,6 +10,7 @@ import (
 	"github.com/clems4ever/mcp-oauth2-proxy/config"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/oidc"
 	"github.com/clems4ever/mcp-oauth2-proxy/internal/server"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
 	"github.com/spf13/cobra"
 )
 
@@ -25,6 +26,18 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		var st *store.Store
+		if cfg.Storage.Path != "" {
+			st, err = store.Open(cfg.Storage.Path)
+			if err != nil {
+				return fmt.Errorf("opening storage: %w", err)
+			}
+			defer func() { _ = st.Close() }()
+			log.Printf("persisting refresh tokens to %s", cfg.Storage.Path)
+		} else {
+			st = store.New()
+		}
+
 		var oidcClient *oidc.Client
 		if cfg.OIDCEnabled() {
 			oidcClient, err = oidc.New(context.Background(), cfg.OIDC)
@@ -34,7 +47,7 @@ var rootCmd = &cobra.Command{
 			log.Printf("OIDC login enabled for issuer %s", cfg.OIDC.Issuer)
 		}
 
-		srv := server.New(cfg, oidcClient)
+		srv := server.New(cfg, st, oidcClient)
 		log.Printf("starting OAuth2 server on %s", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil {
 			return fmt.Errorf("server error: %w", err)

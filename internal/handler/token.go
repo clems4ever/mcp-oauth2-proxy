@@ -311,13 +311,17 @@ func (h *Handler) issueAccessAndRefresh(w http.ResponseWriter, subject, clientID
 		writeError(w, "server_error", "failed to generate refresh token", http.StatusInternalServerError)
 		return
 	}
-	h.store.SaveRefreshToken(&store.RefreshToken{
+	if err := h.store.SaveRefreshToken(&store.RefreshToken{
 		Token:     refresh,
 		ClientID:  clientID,
 		Subject:   subject,
 		Scopes:    scopes,
 		ExpiresAt: time.Now().Add(time.Duration(h.cfg.Server.RefreshTokenTTL) * time.Second),
-	})
+	}); err != nil {
+		log.Printf("[TOKEN] failed to persist refresh token: %v", err)
+		writeError(w, "server_error", "failed to persist refresh token", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Pragma", "no-cache")

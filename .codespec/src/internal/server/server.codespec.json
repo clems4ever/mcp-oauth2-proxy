@@ -2,9 +2,9 @@
 	"functions": [
 		{
 			"function_name": "New",
-			"documentation_hash": "290e2a737598d8b353e0ac5c23bf1daeffb0553c2e5c5cf80585acb4a4216fc1",
-			"definition_hash": "622578e5e428626f58f8297737ef26cc987fe3cc4be0fe74e877e6d087958832",
-			"reviewed_at": "2026-06-13T22:27:58.663986433Z"
+			"documentation_hash": "0fff792418f2b77ff9833d77661f9567fce8c79829a59d4384f9695e90255c90",
+			"definition_hash": "186be5624c690462f16c5c6b452ed18c8c412063d3c13b7b96aa96b49e82a831",
+			"reviewed_at": "2026-06-14T08:44:58.630219825Z"
 		}
 	]
 }

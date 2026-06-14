@@ -3,6 +3,7 @@ package store
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"log"
 	"sync"
 	"time"
 )
@@ -53,27 +54,64 @@ type RefreshToken struct {
 	ExpiresAt time.Time
 }
 
-// Store is the in-memory authorization server state.
+// Store holds authorization server state. Clients, authorization codes and OIDC
+// login states are always in-memory (the latter two are short-lived); refresh
+// tokens go through a pluggable backend that may persist them on disk.
 type Store struct {
-	mu            sync.RWMutex
-	clients       map[string]*Client
-	codes         map[string]*AuthCode
-	oidcStates    map[string]*OIDCState
-	refreshTokens map[string]*RefreshToken
+	mu         sync.RWMutex
+	clients    map[string]*Client
+	codes      map[string]*AuthCode
+	oidcStates map[string]*OIDCState
+	refresh    refreshBackend
 }
 
-// New creates a new Store.
+// newWithRefresh builds a Store with in-memory maps and the given refresh backend.
 //
-// @return *Store An empty store with its client, code, OIDC-state and refresh-token maps initialized.
+// @arg rb The refresh-token backend (in-memory or bolt-backed).
+// @return *Store A store wired to rb.
+//
+// @testcase TestNew verifies the in-memory store maps are initialized.
+// @testcase TestStore_PersistsRefreshAcrossReopen verifies the bolt-backed store works.
+func newWithRefresh(rb refreshBackend) *Store {
+	return &Store{
+		clients:    make(map[string]*Client),
+		codes:      make(map[string]*AuthCode),
+		oidcStates: make(map[string]*OIDCState),
+		refresh:    rb,
+	}
+}
+
+// New creates a fully in-memory Store (refresh tokens are not persisted).
+//
+// @return *Store An in-memory store.
 //
 // @testcase TestNew verifies all internal maps are initialized.
 func New() *Store {
-	return &Store{
-		clients:       make(map[string]*Client),
-		codes:         make(map[string]*AuthCode),
-		oidcStates:    make(map[string]*OIDCState),
-		refreshTokens: make(map[string]*RefreshToken),
+	return newWithRefresh(newMemRefresh())
+}
+
+// Open creates a Store that persists refresh tokens to a bbolt database at path.
+//
+// @arg path Filesystem path to the bbolt database file.
+// @return *Store A store whose refresh tokens survive process restarts.
+// @error Returns an error if the database cannot be opened.
+//
+// @testcase TestStore_PersistsRefreshAcrossReopen verifies refresh tokens survive a reopen.
+func Open(path string) (*Store, error) {
+	rb, err := newBoltRefresh(path)
+	if err != nil {
+		return nil, err
 	}
+	return newWithRefresh(rb), nil
+}
+
+// Close releases the refresh-token backend (closing the database when persistent).
+//
+// @error Returns an error if the backend fails to close.
+//
+// @testcase TestStore_PersistsRefreshAcrossReopen verifies the store can be closed and reopened.
+func (s *Store) Close() error {
+	return s.refresh.close()
 }
 
 // randomHex returns a hex-encoded string of n random bytes.
@@ -188,15 +226,14 @@ func (s *Store) ConsumeAuthCode(code string) *AuthCode {
 	return ac
 }
 
-// SaveRefreshToken stores a refresh token keyed by its opaque value.
+// SaveRefreshToken persists a refresh token through the configured backend.
 //
 // @arg rt The refresh token record to store, keyed by its Token.
+// @error Returns an error if the backend fails to persist the token.
 //
 // @testcase TestConsumeRefreshToken_Valid verifies a saved refresh token can be retrieved.
-func (s *Store) SaveRefreshToken(rt *RefreshToken) {
-	s.mu.Lock()
-	s.refreshTokens[rt.Token] = rt
-	s.mu.Unlock()
+func (s *Store) SaveRefreshToken(rt *RefreshToken) error {
+	return s.refresh.save(rt)
 }
 
 // ConsumeRefreshToken atomically retrieves and deletes a refresh token,
@@ -209,14 +246,9 @@ func (s *Store) SaveRefreshToken(rt *RefreshToken) {
 // @testcase TestConsumeRefreshToken_Expired verifies an expired refresh token is rejected.
 // @testcase TestConsumeRefreshToken_Unknown verifies an unknown refresh token returns nil.
 func (s *Store) ConsumeRefreshToken(token string) *RefreshToken {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	rt, ok := s.refreshTokens[token]
-	if !ok {
-		return nil
-	}
-	delete(s.refreshTokens, token)
-	if time.Now().After(rt.ExpiresAt) {
+	rt, err := s.refresh.consume(token)
+	if err != nil {
+		log.Printf("[store] consume refresh token: %v", err)
 		return nil
 	}
 	return rt

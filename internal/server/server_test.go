@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/clems4ever/mcp-oauth2-proxy/config"
+	"github.com/clems4ever/mcp-oauth2-proxy/internal/store"
 )
 
 // baseConfig returns a minimal valid configuration (with a JWT secret and
@@ -37,14 +38,14 @@ func TestNew_PanicsOnEmptyJWTSecret(t *testing.T) {
 		}
 	}()
 
-	New(cfg, nil)
+	New(cfg, store.New(), nil)
 }
 
 // TestNew_SucceedsWithJWTSecret verifies that New returns a server bound to the configured port with a handler set.
 //
 // @arg t The testing context provided by the Go test runner.
 func TestNew_SucceedsWithJWTSecret(t *testing.T) {
-	srv := New(baseConfig(), nil)
+	srv := New(baseConfig(), store.New(), nil)
 	if srv == nil {
 		t.Fatal("expected a non-nil server")
 	}

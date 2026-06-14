@@ -168,6 +168,25 @@ func TestLoad_OIDCMissingRequiredFields(t *testing.T) {
 	}
 }
 
+// TestLoad_StoragePath verifies the optional storage.path is parsed.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestLoad_StoragePath(t *testing.T) {
+	path := writeConfig(t, `
+server:
+  jwt_secret: secret
+storage:
+  path: /var/lib/mcp-oauth2.db
+`)
+	cfg, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if cfg.Storage.Path != "/var/lib/mcp-oauth2.db" {
+		t.Errorf("unexpected storage path: %q", cfg.Storage.Path)
+	}
+}
+
 // TestFindUser verifies FindUser returns a matching user and nil for an unknown username.
 //
 // @arg t The testing context provided by the Go test runner.

@@ -7,6 +7,14 @@ server:
   refresh_token_ttl: 2592000 # refresh token lifetime, seconds (default 30 days)
   upstream_url: "http://localhost:9090" # MCP HTTP server – all unmatched requests are proxied here
 
+# Optional on-disk persistence. When set, refresh tokens are stored in a bbolt
+# database so issued logins survive a restart. Omit for in-memory only (refresh
+# tokens are then lost on restart). Auth codes and login sessions are always
+# in-memory (they are short-lived).
+#
+# storage:
+#   path: "/var/lib/mcp-oauth2/store.db"
+
 # Human users for the authorization code flow.
 # MCP clients (e.g. Claude) redirect the user here to authenticate.
 #

@@ -45,12 +45,18 @@ type OIDCConfig struct {
 	AllowedEmails []string `yaml:"allowed_emails"` // only these verified emails may authenticate
 }
 
+// StorageConfig configures optional on-disk persistence.
+type StorageConfig struct {
+	Path string `yaml:"path"` // bbolt file for refresh tokens; empty = in-memory only
+}
+
 // Config is the root configuration.
 type Config struct {
-	Server      ServerConfig `yaml:"server"`
-	Users       []User       `yaml:"users"`
-	Application Application  `yaml:"application"`
-	OIDC        *OIDCConfig  `yaml:"oidc"`
+	Server      ServerConfig  `yaml:"server"`
+	Users       []User        `yaml:"users"`
+	Application Application   `yaml:"application"`
+	OIDC        *OIDCConfig   `yaml:"oidc"`
+	Storage     StorageConfig `yaml:"storage"`
 }
 
 // OIDCEnabled reports whether an OIDC provider is configured.

@@ -113,6 +113,19 @@ Refresh tokens are issued for the authorization code (and refresh) flows only â€
 the `client_credentials` grant returns none, since a machine client can simply
 request a new token with its credentials.
 
+By default refresh tokens are kept in memory and lost on restart. To make logins
+survive restarts, set `storage.path` to persist them in an embedded
+[bbolt](https://github.com/etcd-io/bbolt) database (expired tokens are swept
+automatically):
+
+```yaml
+storage:
+  path: "/var/lib/mcp-oauth2/store.db"
+```
+
+Authorization codes and login sessions are always in-memory (they are
+short-lived).
+
 ### Response
 
 ```json
