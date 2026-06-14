@@ -2,8 +2,9 @@ server:
   port: 8080
   issuer: "https://localhost:8080"    # public base URL of this server (must be set explicitly; request headers are not trusted)
   jwt_secret: "change-me-in-production"
-  token_ttl: 3600        # access token lifetime, seconds
-  auth_code_ttl: 300     # authorization code / login session lifetime, seconds
+  token_ttl: 3600           # access token lifetime, seconds
+  auth_code_ttl: 300        # authorization code / login session lifetime, seconds
+  refresh_token_ttl: 2592000 # refresh token lifetime, seconds (default 30 days)
   upstream_url: "http://localhost:9090" # MCP HTTP server – all unmatched requests are proxied here
 
 # Human users for the authorization code flow.

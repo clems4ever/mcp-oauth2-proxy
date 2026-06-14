@@ -55,7 +55,7 @@ func (h *Handler) Metadata(w http.ResponseWriter, r *http.Request) {
 		AuthorizationEndpoint:             issuer + "/oauth2/authorize",
 		TokenEndpoint:                     issuer + "/oauth2/token",
 		ResponseTypesSupported:            []string{"code"},
-		GrantTypesSupported:               []string{"authorization_code", "client_credentials"},
+		GrantTypesSupported:               []string{"authorization_code", "client_credentials", "refresh_token"},
 		CodeChallengeMethodsSupported:     []string{"S256"},
 		TokenEndpointAuthMethodsSupported: []string{"client_secret_basic", "client_secret_post", "none"},
 	})

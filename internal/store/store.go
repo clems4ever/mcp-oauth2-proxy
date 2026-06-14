@@ -44,24 +44,35 @@ type OIDCState struct {
 	ExpiresAt           time.Time
 }
 
+// RefreshToken is a stored refresh token bound to a subject, client and scopes.
+type RefreshToken struct {
+	Token     string // opaque token value, also the map key
+	ClientID  string
+	Subject   string
+	Scopes    []string
+	ExpiresAt time.Time
+}
+
 // Store is the in-memory authorization server state.
 type Store struct {
-	mu         sync.RWMutex
-	clients    map[string]*Client
-	codes      map[string]*AuthCode
-	oidcStates map[string]*OIDCState
+	mu            sync.RWMutex
+	clients       map[string]*Client
+	codes         map[string]*AuthCode
+	oidcStates    map[string]*OIDCState
+	refreshTokens map[string]*RefreshToken
 }
 
 // New creates a new Store.
 //
-// @return *Store An empty store with its client, code and OIDC-state maps initialized.
+// @return *Store An empty store with its client, code, OIDC-state and refresh-token maps initialized.
 //
 // @testcase TestNew verifies all internal maps are initialized.
 func New() *Store {
 	return &Store{
-		clients:    make(map[string]*Client),
-		codes:      make(map[string]*AuthCode),
-		oidcStates: make(map[string]*OIDCState),
+		clients:       make(map[string]*Client),
+		codes:         make(map[string]*AuthCode),
+		oidcStates:    make(map[string]*OIDCState),
+		refreshTokens: make(map[string]*RefreshToken),
 	}
 }
 
@@ -175,6 +186,40 @@ func (s *Store) ConsumeAuthCode(code string) *AuthCode {
 		return nil
 	}
 	return ac
+}
+
+// SaveRefreshToken stores a refresh token keyed by its opaque value.
+//
+// @arg rt The refresh token record to store, keyed by its Token.
+//
+// @testcase TestConsumeRefreshToken_Valid verifies a saved refresh token can be retrieved.
+func (s *Store) SaveRefreshToken(rt *RefreshToken) {
+	s.mu.Lock()
+	s.refreshTokens[rt.Token] = rt
+	s.mu.Unlock()
+}
+
+// ConsumeRefreshToken atomically retrieves and deletes a refresh token,
+// supporting single-use rotation. Returns nil if not found or expired.
+//
+// @arg token The opaque refresh token value to consume.
+// @return *RefreshToken The stored record, or nil if not found or expired.
+//
+// @testcase TestConsumeRefreshToken_SingleUse verifies a refresh token cannot be consumed twice.
+// @testcase TestConsumeRefreshToken_Expired verifies an expired refresh token is rejected.
+// @testcase TestConsumeRefreshToken_Unknown verifies an unknown refresh token returns nil.
+func (s *Store) ConsumeRefreshToken(token string) *RefreshToken {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	rt, ok := s.refreshTokens[token]
+	if !ok {
+		return nil
+	}
+	delete(s.refreshTokens, token)
+	if time.Now().After(rt.ExpiresAt) {
+		return nil
+	}
+	return rt
 }
 
 // SaveOIDCState stores a pending OIDC login keyed by its CSRF state.

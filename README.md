@@ -7,6 +7,7 @@ It sits in front of your MCP server, handles all OAuth flows, validates Bearer t
 ## Features
 
 - **Authorization code flow** with PKCE (S256) — used by MCP clients such as Claude
+- **Refresh token flow** with rotation — clients renew access tokens without re-authenticating
 - **Client credentials flow** — machine-to-machine access
 - Browser-based login form with bcrypt password verification
 - Optional **OpenID Connect login** (e.g. Google) with an email allowlist, alongside the password form
@@ -94,6 +95,24 @@ curl -X POST http://localhost:8080/oauth2/token \
   -d "grant_type=authorization_code&code=<code>&redirect_uri=<uri>&code_verifier=<verifier>"
 ```
 
+The authorization code response includes a `refresh_token`.
+
+### Refresh token
+
+Exchange a refresh token for a new access token (and a rotated refresh token).
+The previous refresh token is invalidated on use; an optional `scope` may narrow
+the granted scopes (it must be a subset of the original):
+
+```bash
+curl -X POST http://localhost:8080/oauth2/token \
+  -u service-client-id:service-client-secret \
+  -d "grant_type=refresh_token&refresh_token=<refresh_token>"
+```
+
+Refresh tokens are issued for the authorization code (and refresh) flows only —
+the `client_credentials` grant returns none, since a machine client can simply
+request a new token with its credentials.
+
 ### Response
 
 ```json
@@ -101,6 +120,7 @@ curl -X POST http://localhost:8080/oauth2/token \
   "access_token": "eyJhbGci...",
   "token_type": "Bearer",
   "expires_in": 3600,
+  "refresh_token": "9f8c...",
   "scope": "read write"
 }
 ```

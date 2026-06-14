@@ -10,12 +10,13 @@ import (
 
 // ServerConfig holds HTTP server and token settings.
 type ServerConfig struct {
-	Port        int    `yaml:"port"`
-	Issuer      string `yaml:"issuer"`
-	JWTSecret   string `yaml:"jwt_secret"`
-	TokenTTL    int    `yaml:"token_ttl"`     // access token lifetime, seconds
-	AuthCodeTTL int    `yaml:"auth_code_ttl"` // authorization code lifetime, seconds
-	UpstreamURL string `yaml:"upstream_url"`  // MCP HTTP server to proxy unhandled requests to
+	Port            int    `yaml:"port"`
+	Issuer          string `yaml:"issuer"`
+	JWTSecret       string `yaml:"jwt_secret"`
+	TokenTTL        int    `yaml:"token_ttl"`         // access token lifetime, seconds
+	AuthCodeTTL     int    `yaml:"auth_code_ttl"`     // authorization code lifetime, seconds
+	RefreshTokenTTL int    `yaml:"refresh_token_ttl"` // refresh token lifetime, seconds
+	UpstreamURL     string `yaml:"upstream_url"`      // MCP HTTP server to proxy unhandled requests to
 }
 
 // User is a human user that can authenticate at the authorization endpoint.
@@ -36,19 +37,19 @@ type Application struct {
 // OIDCConfig configures an upstream OpenID Connect provider (e.g. Google) used
 // as an alternative browser login alongside the local password form.
 type OIDCConfig struct {
-	Issuer        string   `yaml:"issuer"`        // e.g. https://accounts.google.com
-	ClientID      string   `yaml:"client_id"`     // OAuth client ID registered with the provider
-	ClientSecret  string   `yaml:"client_secret"` // OAuth client secret
-	RedirectURL   string   `yaml:"redirect_url"`  // this proxy's callback; defaults to <issuer base URL>/oauth2/oidc/callback
-	Scopes        []string `yaml:"scopes"`        // requested scopes; defaults to [openid, email, profile]
-	AllowedEmails []string `yaml:"allowed_emails"`// only these verified emails may authenticate
+	Issuer        string   `yaml:"issuer"`         // e.g. https://accounts.google.com
+	ClientID      string   `yaml:"client_id"`      // OAuth client ID registered with the provider
+	ClientSecret  string   `yaml:"client_secret"`  // OAuth client secret
+	RedirectURL   string   `yaml:"redirect_url"`   // this proxy's callback; defaults to <issuer base URL>/oauth2/oidc/callback
+	Scopes        []string `yaml:"scopes"`         // requested scopes; defaults to [openid, email, profile]
+	AllowedEmails []string `yaml:"allowed_emails"` // only these verified emails may authenticate
 }
 
 // Config is the root configuration.
 type Config struct {
 	Server      ServerConfig `yaml:"server"`
 	Users       []User       `yaml:"users"`
-	Application  Application  `yaml:"application"`
+	Application Application  `yaml:"application"`
 	OIDC        *OIDCConfig  `yaml:"oidc"`
 }
 
@@ -91,6 +92,9 @@ func Load(path string) (*Config, error) {
 	}
 	if cfg.Server.AuthCodeTTL == 0 {
 		cfg.Server.AuthCodeTTL = 300
+	}
+	if cfg.Server.RefreshTokenTTL == 0 {
+		cfg.Server.RefreshTokenTTL = 2592000 // 30 days
 	}
 	if cfg.Server.Issuer == "" {
 		cfg.Server.Issuer = fmt.Sprintf("http://localhost:%d", cfg.Server.Port)

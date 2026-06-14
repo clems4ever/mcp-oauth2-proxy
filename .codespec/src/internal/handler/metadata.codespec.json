@@ -4,15 +4,15 @@
 			"function_name": "Metadata",
 			"receiver": "Handler",
 			"documentation_hash": "905b3f2f7e3af1016e3d2f9449462d82f15792e9cc6d426fe92f3313821a09a4",
-			"definition_hash": "80b05574ed7e58ac6e1aa23459612d4d9efdde62a705caee432787a90de29b10",
-			"reviewed_at": "2026-06-13T17:20:59.074557763Z"
+			"definition_hash": "34da2cce3a0ed6849132e6223b19387727c36ed1013462fb8b231018132158f2",
+			"reviewed_at": "2026-06-14T08:31:24.314843103Z"
 		},
 		{
 			"function_name": "ProtectedResource",
 			"receiver": "Handler",
 			"documentation_hash": "5bee5ced1d2b530824b6df7b28491161e0705b7a64765924793705c0ee2f4fc3",
 			"definition_hash": "7568f9f4f7ad2aca22e8c7f3b831964e833bf3cf6e5aadae0942b4db01bea202",
-			"reviewed_at": "2026-06-13T17:20:59.074977136Z"
+			"reviewed_at": "2026-06-14T08:31:24.31461823Z"
 		}
 	]
 }

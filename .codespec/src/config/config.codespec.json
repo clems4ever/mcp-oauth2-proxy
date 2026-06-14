@@ -5,27 +5,27 @@
 			"receiver": "Config",
 			"documentation_hash": "a05bc08176e66393e9acc4d73ba9cf76f4331f84263e0acc6ced308f3278227a",
 			"definition_hash": "f42c4dd12fb986572e8f544fcd6a20d04be34c3864dd729980520c7c7106e35a",
-			"reviewed_at": "2026-06-13T19:36:29.881084876Z"
+			"reviewed_at": "2026-06-14T08:31:24.303528545Z"
 		},
 		{
 			"function_name": "Load",
 			"documentation_hash": "b0251dc01b3c6e142251e37f5fd5dda93e79beaece01ce2f41e1c4b557109047",
-			"definition_hash": "3f1131bfb4863bf327ea436bcba9fa6526d30ba2f3ef99c6fdf62736149aaebb",
-			"reviewed_at": "2026-06-13T19:36:29.881271883Z"
+			"definition_hash": "1573a2679a22886f9a8380e79fe25a9dd5f0f798686d5df03900b71e25a3d077",
+			"reviewed_at": "2026-06-14T08:31:24.304835076Z"
 		},
 		{
 			"function_name": "validate",
 			"receiver": "OIDCConfig",
 			"documentation_hash": "04a1fdaf457a5810047a305507bafc02c4de9842b8d592f16bd860009330a770",
 			"definition_hash": "ab852164e7c9c78551236c013420bab827a1d444f583ebf3e877137fee0841d1",
-			"reviewed_at": "2026-06-13T19:36:29.881436829Z"
+			"reviewed_at": "2026-06-14T08:31:24.305838088Z"
 		},
 		{
 			"function_name": "FindUser",
 			"receiver": "Config",
 			"documentation_hash": "311e2db1ea1b0b0e7ce31e40475a3ca8deaa32d940c64a9a2627f3a333fb0aad",
 			"definition_hash": "eeef14b364331a341f7bfff3d633bbd9d43a32593549648eb9ff6b0b67ac4eb5",
-			"reviewed_at": "2026-06-13T19:36:29.881578982Z"
+			"reviewed_at": "2026-06-14T08:31:24.306708624Z"
 		}
 	]
 }

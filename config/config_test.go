@@ -41,6 +41,9 @@ server:
 	if cfg.Server.AuthCodeTTL != 300 {
 		t.Errorf("expected default auth_code_ttl 300, got %d", cfg.Server.AuthCodeTTL)
 	}
+	if cfg.Server.RefreshTokenTTL != 2592000 {
+		t.Errorf("expected default refresh_token_ttl 2592000, got %d", cfg.Server.RefreshTokenTTL)
+	}
 	if cfg.Server.Issuer != "http://localhost:8080" {
 		t.Errorf("expected default issuer, got %q", cfg.Server.Issuer)
 	}

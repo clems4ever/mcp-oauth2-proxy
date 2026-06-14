@@ -77,6 +77,65 @@ func TestConsumeOIDCState_Unknown(t *testing.T) {
 	}
 }
 
+// TestConsumeRefreshToken_Valid verifies a saved refresh token can be retrieved.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeRefreshToken_Valid(t *testing.T) {
+	s := New()
+	s.SaveRefreshToken(&RefreshToken{
+		Token:     "rt1",
+		ClientID:  "client1",
+		Subject:   "alice",
+		Scopes:    []string{"read"},
+		ExpiresAt: time.Now().Add(time.Hour),
+	})
+
+	got := s.ConsumeRefreshToken("rt1")
+	if got == nil {
+		t.Fatal("expected to retrieve saved refresh token")
+	}
+	if got.Subject != "alice" || got.ClientID != "client1" {
+		t.Errorf("unexpected refresh token: %+v", got)
+	}
+}
+
+// TestConsumeRefreshToken_SingleUse verifies a refresh token cannot be consumed twice.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeRefreshToken_SingleUse(t *testing.T) {
+	s := New()
+	s.SaveRefreshToken(&RefreshToken{Token: "rt1", ExpiresAt: time.Now().Add(time.Hour)})
+
+	if s.ConsumeRefreshToken("rt1") == nil {
+		t.Fatal("first consume should succeed")
+	}
+	if s.ConsumeRefreshToken("rt1") != nil {
+		t.Error("second consume must return nil (single use)")
+	}
+}
+
+// TestConsumeRefreshToken_Expired verifies an expired refresh token is rejected.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeRefreshToken_Expired(t *testing.T) {
+	s := New()
+	s.SaveRefreshToken(&RefreshToken{Token: "rt1", ExpiresAt: time.Now().Add(-time.Minute)})
+
+	if s.ConsumeRefreshToken("rt1") != nil {
+		t.Error("expired refresh token must return nil")
+	}
+}
+
+// TestConsumeRefreshToken_Unknown verifies an unknown refresh token returns nil.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestConsumeRefreshToken_Unknown(t *testing.T) {
+	s := New()
+	if s.ConsumeRefreshToken("missing") != nil {
+		t.Error("unknown refresh token must return nil")
+	}
+}
+
 // TestRegisterClient_Confidential verifies a confidential client gets a secret and is stored.
 //
 // @arg t The testing context provided by the Go test runner.

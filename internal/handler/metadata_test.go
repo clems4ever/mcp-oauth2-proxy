@@ -89,7 +89,7 @@ func TestMetadata_Body(t *testing.T) {
 		t.Errorf("unexpected CodeChallengeMethodsSupported: %v", resp.CodeChallengeMethodsSupported)
 	}
 
-	expectedGrantTypes := map[string]bool{"authorization_code": true, "client_credentials": true}
+	expectedGrantTypes := map[string]bool{"authorization_code": true, "client_credentials": true, "refresh_token": true}
 	for _, gt := range resp.GrantTypesSupported {
 		delete(expectedGrantTypes, gt)
 	}

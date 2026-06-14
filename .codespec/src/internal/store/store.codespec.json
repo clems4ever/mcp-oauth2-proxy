@@ -2,64 +2,78 @@
 	"functions": [
 		{
 			"function_name": "New",
-			"documentation_hash": "affd5bcd1b9dd375f2f54fe8cbf4b3cf86673f12384588cd2902fe1b9b298c24",
-			"definition_hash": "250a84d70e1ea72f89a5f624a9feec92d0e33d99f25015191178518c1c9edf34",
-			"reviewed_at": "2026-06-13T19:36:29.917864486Z"
+			"documentation_hash": "c3b1322fbed3e7d1a5addafc189eb952b4f28ddbd8498bfe77e8631f7cf9f0d1",
+			"definition_hash": "a5d62f7482d7212173460713d9d2dca3598569592cfad094e086ed93552ebfc6",
+			"reviewed_at": "2026-06-14T08:31:24.326476188Z"
 		},
 		{
 			"function_name": "randomHex",
 			"documentation_hash": "4a1e3e5428e5d0d6c6d622638895def1b70eb660e90efd5c9abde00fb15ccdd6",
 			"definition_hash": "75cfcb841e89501bd4dea0569e39a674c5ba38850e19f43df1dded63e1baf6df",
-			"reviewed_at": "2026-06-13T19:36:29.918152983Z"
+			"reviewed_at": "2026-06-14T08:31:24.326676604Z"
 		},
 		{
 			"function_name": "RegisterClient",
 			"receiver": "Store",
 			"documentation_hash": "a2e2a7040f08d7eb65833473a72b8027ae1be5aebf7382012cb39f139d245cdb",
 			"definition_hash": "bbba75cf250a03f5f57730d664a73aeb5d82570e01a939b1c4528006b565fd58",
-			"reviewed_at": "2026-06-13T19:36:29.91856953Z"
+			"reviewed_at": "2026-06-14T08:31:24.326863415Z"
 		},
 		{
 			"function_name": "PutClient",
 			"receiver": "Store",
 			"documentation_hash": "95f9778e3c1742103a742ed1f8ece27823ee9ba7f5e8d693249e9f8300ee65f7",
 			"definition_hash": "f06ca6b962364cfd29b03ddba826139417b550be8417e968fa9c4386ee5d83ad",
-			"reviewed_at": "2026-06-13T19:36:29.918845218Z"
+			"reviewed_at": "2026-06-14T08:31:24.327045534Z"
 		},
 		{
 			"function_name": "FindClient",
 			"receiver": "Store",
 			"documentation_hash": "ba64d8bf8a50ea709fd87e164c039ccaac711779ba4357260c1d1e637df0ac38",
 			"definition_hash": "ee3d08cc98abe76e72f8df0b10a99ccea8d6f08c52d3f627576732e3eef2ea80",
-			"reviewed_at": "2026-06-13T19:36:29.919113598Z"
+			"reviewed_at": "2026-06-14T08:31:24.327222869Z"
 		},
 		{
 			"function_name": "SaveAuthCode",
 			"receiver": "Store",
 			"documentation_hash": "80e64dbc22ccd55bdd7cdf4a26c51ff1c0f5ceb844c4490303d1c6124b69accb",
 			"definition_hash": "7ec8ca0ba5a7bdb40c5f0697f1502acb8d106af25ed1f8ea3c3ea27a1ee3d524",
-			"reviewed_at": "2026-06-13T19:36:29.919383892Z"
+			"reviewed_at": "2026-06-14T08:31:24.327399081Z"
 		},
 		{
 			"function_name": "ConsumeAuthCode",
 			"receiver": "Store",
 			"documentation_hash": "291d66aa74415587fb025e82a25b5d02a66487601251c41d733665120adf469b",
 			"definition_hash": "d7cd58c3708ce168c7c3eb4187a901f831d0137edf1d0ed9805168be80d86cb2",
-			"reviewed_at": "2026-06-13T19:36:29.919650289Z"
+			"reviewed_at": "2026-06-14T08:31:24.327906841Z"
 		},
 		{
 			"function_name": "SaveOIDCState",
 			"receiver": "Store",
 			"documentation_hash": "c608488c4b986fe4b4de1705327697e7cb040a8c29df6674deebe8432e8bda0f",
 			"definition_hash": "e7a671a46b30b31eea1fa5c5de16e1f12d669606f30366d73a711e4224a9b60c",
-			"reviewed_at": "2026-06-13T19:36:29.919914687Z"
+			"reviewed_at": "2026-06-14T08:31:24.328579041Z"
 		},
 		{
 			"function_name": "ConsumeOIDCState",
 			"receiver": "Store",
 			"documentation_hash": "f0a3720c1600859a8947677bbeeec3f9b020fe76859b496b0b3f0309e9b54d30",
 			"definition_hash": "58b383fcc7cab43fb25bb1d8a992f58a126463ade91b0306dd9378ab9bc77ed1",
-			"reviewed_at": "2026-06-13T19:36:29.92017694Z"
+			"reviewed_at": "2026-06-14T08:31:24.328781007Z"
+		},
+		{
+			"function_name": "SaveRefreshToken",
+			"receiver": "Store",
+			"documentation_hash": "8e7a19799cedbd1c64f56f19997ef9331b0da6aa821c3b47195a6043f9fa7113",
+			"definition_hash": "510175211d49b8a107a740a8852b79c84cfa72ce0be17443cb1bb7482a7ab58f",
+			"reviewed_at": "2026-06-14T08:31:24.328137865Z"
+		},
+		{
+			"function_name": "ConsumeRefreshToken",
+			"receiver": "Store",
+			"documentation_hash": "0607ded9bed70fe27bcc48e432b4411ac411a54b4034fd3d73c626104f6cd21b",
+			"definition_hash": "4b50d4f3a87bfc91f09358cc52b7b65a639c11e02735caaf9fbbd44c70ea1724",
+			"reviewed_at": "2026-06-14T08:31:24.328355779Z"
 		}
 	]
 }
