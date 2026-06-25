@@ -9,8 +9,8 @@
 		{
 			"function_name": "bearerToken",
 			"documentation_hash": "a0d706bc10804fbd9012fe7eafa342aedd195bf691ab0a5523631919ace6ad8a",
-			"definition_hash": "e6fdd1bd7c1d6c210e3b3434b31b4a195a841992866957ba2664752a96b05367",
-			"reviewed_at": "2026-06-13T17:28:53.803573002Z"
+			"definition_hash": "d7e0844bcfa590d5d41e2d80b871c711c7861fc777c2ed87539ecccd99527761",
+			"reviewed_at": "2026-06-25T12:20:37.157525447Z"
 		},
 		{
 			"function_name": "logRequest",

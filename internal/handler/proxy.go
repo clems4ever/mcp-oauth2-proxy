@@ -82,8 +82,8 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 // @testcase TestBearerToken verifies extraction for Bearer, non-Bearer and missing headers.
 func bearerToken(r *http.Request) string {
 	auth := r.Header.Get("Authorization")
-	if strings.HasPrefix(auth, "Bearer ") {
-		return strings.TrimPrefix(auth, "Bearer ")
+	if after, ok := strings.CutPrefix(auth, "Bearer "); ok {
+		return after
 	}
 	return ""
 }
