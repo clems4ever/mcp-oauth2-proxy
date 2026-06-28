@@ -2,8 +2,10 @@ package handler
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -99,6 +101,55 @@ func TestProxy_ValidToken_ForwardsToUpstream(t *testing.T) {
 	}
 }
 
+// TestProxy_Debug_DumpsProxiedRequest verifies debug mode dumps the forwarded request while still proxying it.
+//
+// @arg t The testing context provided by the Go test runner.
+func TestProxy_Debug_DumpsProxiedRequest(t *testing.T) {
+	var gotBody string
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		gotBody = string(b)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer upstream.Close()
+
+	cfg := proxyConfig(upstream.URL)
+	cfg.Server.Debug = true
+	h := Proxy(cfg, upstream.URL)
+
+	var logBuf strings.Builder
+	log.SetOutput(&logBuf)
+	defer log.SetOutput(os.Stderr)
+
+	tok, err := token.Generate(proxyJWTSecret, testIssuer, "sub", []string{"read"}, 3600)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/mcp", strings.NewReader("payload-body"))
+	req.Header.Set("Authorization", "Bearer "+tok)
+	rr := httptest.NewRecorder()
+
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	if gotBody != "payload-body" {
+		t.Errorf("upstream should still receive the body, got %q", gotBody)
+	}
+	out := logBuf.String()
+	if !strings.Contains(out, "PROXIED") {
+		t.Errorf("expected PROXIED dump in debug mode, got:\n%s", out)
+	}
+	if !strings.Contains(out, "payload-body") {
+		t.Errorf("expected request body in debug dump, got:\n%s", out)
+	}
+	if strings.Contains(out, tok) {
+		t.Errorf("debug dump leaked the bearer token:\n%s", out)
+	}
+}
+
 // TestProxy_ValidToken_NoUpstream_Returns502 verifies a valid token with no upstream configured yields 502.
 //
 // @arg t The testing context provided by the Go test runner.
@@ -155,7 +206,7 @@ func TestFormatRequest_RedactsSensitiveHeaders(t *testing.T) {
 	req.Header.Set("X-Custom", "visible")
 
 	body, _ := io.ReadAll(req.Body)
-	out := formatRequest(req, time.Unix(0, 0).UTC(), body)
+	out := formatRequest(req, time.Unix(0, 0).UTC(), body, "PROXIED")
 
 	for _, secret := range []string{"c2VjcmV0", "supersecret", "leak"} {
 		if strings.Contains(out, secret) {

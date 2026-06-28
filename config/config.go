@@ -17,6 +17,7 @@ type ServerConfig struct {
 	AuthCodeTTL     int    `yaml:"auth_code_ttl"`     // authorization code lifetime, seconds
 	RefreshTokenTTL int    `yaml:"refresh_token_ttl"` // refresh token lifetime, seconds
 	UpstreamURL     string `yaml:"upstream_url"`      // MCP HTTP server to proxy unhandled requests to
+	Debug           bool   `yaml:"debug"`             // when true, dump every request proxied to the upstream
 }
 
 // User is a human user that can authenticate at the authorization endpoint.

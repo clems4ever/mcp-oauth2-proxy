@@ -4,43 +4,49 @@
 			"function_name": "proxyConfig",
 			"documentation_hash": "0c733600d4adbdcbaa5125b009fd6bbf00a6aa800e37874cf72eb37d59e29f37",
 			"definition_hash": "0c6d531648c4c921318f1fb5c9c85b12b1e14d6f80d0f076bbe0686d332b5cb7",
-			"reviewed_at": "2026-06-13T17:28:53.804297642Z"
+			"reviewed_at": "2026-06-28T20:30:15.54350603Z"
 		},
 		{
 			"function_name": "TestProxy_NoToken_Returns401",
 			"documentation_hash": "a28253f8acc6d95a0375bbb6035881075cb64dba1ac64dbe2c95e18ad7eab447",
 			"definition_hash": "328cadc90b323ed9171d50a221fe151534ee5982bfea42e79ad41613bd8178ba",
-			"reviewed_at": "2026-06-13T17:28:53.804557334Z"
+			"reviewed_at": "2026-06-28T20:30:15.546458142Z"
 		},
 		{
 			"function_name": "TestProxy_InvalidToken_Returns401",
 			"documentation_hash": "5c40985849aed7d97b5c479a083d599547d5922c57b34832b03fd0e5c207ece9",
 			"definition_hash": "f3f8409a3da862c67546bdba4b3112568b7f92715041716a4924ae887dc5d57a",
-			"reviewed_at": "2026-06-13T17:28:53.804809599Z"
+			"reviewed_at": "2026-06-28T20:30:15.555749492Z"
 		},
 		{
 			"function_name": "TestProxy_ValidToken_ForwardsToUpstream",
 			"documentation_hash": "87de0b2f8447104d7308aa8525cbeb4c7f91e4b9461d82fb2184136e0b97d595",
 			"definition_hash": "4a82044662855864fb4e8ab0a37733a470346174314914cbab9948145fd0ddcd",
-			"reviewed_at": "2026-06-13T17:28:53.805034491Z"
+			"reviewed_at": "2026-06-28T20:30:15.55795819Z"
+		},
+		{
+			"function_name": "TestProxy_Debug_DumpsProxiedRequest",
+			"documentation_hash": "dbfe143c3528bf457a5824509aa2acfa5c9a37cef799722f696be9f1df907dba",
+			"definition_hash": "bcf78e71682ec6b9a61b0d0719f520cd08e991452cf21a96998bbf8a01820aab",
+			"reviewed_at": "2026-06-28T20:30:15.560132218Z"
 		},
 		{
 			"function_name": "TestProxy_ValidToken_NoUpstream_Returns502",
 			"documentation_hash": "f06853fd53ce8a2fb34799747b0818045efed881279e47a5694f98b7b064a0ca",
 			"definition_hash": "aa4e6771c46bccbe07f3a0d3c19ded82560d2b9218f54234bd16926b337f7a04",
-			"reviewed_at": "2026-06-13T17:28:53.805290425Z"
+			"reviewed_at": "2026-06-28T20:30:15.562081565Z"
 		},
 		{
 			"function_name": "TestBearerToken",
 			"documentation_hash": "7a2b939403b3c1ea7430bbb3c1c3ca03f7faa283ff51f445820922b7b9db2955",
 			"definition_hash": "80b9fcfc503ac32dcb9146e4135635c7870dca55fdbca81d3c8e90ba1b14275e",
-			"reviewed_at": "2026-06-13T17:28:53.805539276Z"
+			"reviewed_at": "2026-06-28T20:30:15.564147693Z"
 		},
 		{
 			"function_name": "TestFormatRequest_RedactsSensitiveHeaders",
 			"documentation_hash": "7a8ac5593dff3a6f245c9cc6facebcdde6b00f1e050a4324179698594ee9a169",
-			"definition_hash": "b8df80040d60dfb21a3626869d8babeb801d04686c40b37665290206ee3d9200",
-			"reviewed_at": "2026-06-13T17:28:53.805781734Z"
+			"definition_hash": "68c4084a3fd12cbb73035d931ba65ac74106b8fc6b102b97c8a421025c8e43cf",
+			"reviewed_at": "2026-06-28T20:30:15.565965155Z"
 		}
 	]
 }

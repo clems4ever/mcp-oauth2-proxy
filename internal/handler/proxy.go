@@ -51,7 +51,7 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 
 		raw := bearerToken(r)
 		if raw == "" {
-			logRequest(r)
+			logRequest(r, "UNAUTHENTICATED")
 			w.Header().Set("WWW-Authenticate",
 				fmt.Sprintf(`Bearer resource_metadata=%q`, resourceMetadata))
 			http.Error(w, "authentication required", http.StatusUnauthorized)
@@ -65,7 +65,11 @@ func Proxy(cfg *config.Config, upstreamURL string) http.Handler {
 			return
 		}
 		if rp != nil {
-			log.Printf("[PROXY] %s %s", r.Method, r.RequestURI)
+			if cfg.Server.Debug {
+				logRequest(r, "PROXIED")
+			} else {
+				log.Printf("[PROXY] %s %s", r.Method, r.RequestURI)
+			}
 			rp.ServeHTTP(w, r)
 			return
 		}
@@ -101,9 +105,10 @@ var sensitiveHeaders = map[string]struct{}{
 // It consumes and restores r.Body so the request remains usable afterwards.
 //
 // @arg r Incoming HTTP request to log; its body is read (bounded) and restored.
+// @arg label Short tag identifying why the request is being dumped (e.g. UNAUTHENTICATED, PROXIED).
 //
 // @testcase TestFormatRequest_RedactsSensitiveHeaders verifies the rendered dump omits credentials.
-func logRequest(r *http.Request) {
+func logRequest(r *http.Request, label string) {
 	var body []byte
 	if r.Body != nil && r.Body != http.NoBody {
 		b, err := io.ReadAll(io.LimitReader(r.Body, 4096))
@@ -112,7 +117,7 @@ func logRequest(r *http.Request) {
 			r.Body = io.NopCloser(bytes.NewReader(b))
 		}
 	}
-	log.Print(formatRequest(r, time.Now(), body))
+	log.Print(formatRequest(r, time.Now(), body, label))
 }
 
 // formatRequest renders a request dump with sensitive headers redacted.
@@ -120,13 +125,14 @@ func logRequest(r *http.Request) {
 // @arg r Incoming HTTP request to render (method, target, host and headers).
 // @arg now Timestamp used in the dump header, injected for deterministic tests.
 // @arg body The already-read request body to append, or nil/empty for none.
+// @arg label Short tag prefixing the dump header line (e.g. UNAUTHENTICATED, PROXIED).
 // @return string A human-readable request dump with sensitive headers replaced by [REDACTED].
 //
 // @testcase TestFormatRequest_RedactsSensitiveHeaders verifies credentials are redacted while ordinary headers and the body remain.
-func formatRequest(r *http.Request, now time.Time, body []byte) string {
+func formatRequest(r *http.Request, now time.Time, body []byte, label string) string {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "\n────────────────────────────────────────\n")
-	fmt.Fprintf(&buf, "[%s] UNAUTHENTICATED %s %s\n", now.Format(time.RFC3339), r.Method, r.RequestURI)
+	fmt.Fprintf(&buf, "[%s] %s %s %s\n", now.Format(time.RFC3339), label, r.Method, r.RequestURI)
 	fmt.Fprintf(&buf, "Host: %s\n", r.Host)
 	for name, vals := range r.Header {
 		if _, ok := sensitiveHeaders[strings.ToLower(name)]; ok {

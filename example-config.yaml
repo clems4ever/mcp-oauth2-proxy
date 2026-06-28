@@ -6,6 +6,8 @@ server:
   auth_code_ttl: 300        # authorization code / login session lifetime, seconds
   refresh_token_ttl: 2592000 # refresh token lifetime, seconds (default 30 days)
   upstream_url: "http://localhost:9090" # MCP HTTP server – all unmatched requests are proxied here
+  # debug: true                # dump every request proxied to the upstream (method, headers, body);
+                               # sensitive headers are redacted. Leave off in production – verbose.
 
 # Optional on-disk persistence. When set, refresh tokens are stored in a bbolt
 # database so issued logins survive a restart. Omit for in-memory only (refresh

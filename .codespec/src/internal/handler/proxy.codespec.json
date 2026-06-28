@@ -3,8 +3,8 @@
 		{
 			"function_name": "Proxy",
 			"documentation_hash": "6f1524ca686b13d9a4522d75836956a459dc78dc97fb2aed64e332cea02c05d0",
-			"definition_hash": "3c60d4703a7d5049f8463d56acd1f44ac2f51b53f2eb1e767d43515d94a06495",
-			"reviewed_at": "2026-06-13T22:38:03.122443864Z"
+			"definition_hash": "e9d841cc60105afddae2be84cde386ed4669c58b7ddb46da0016ef118f501d7e",
+			"reviewed_at": "2026-06-28T20:29:56.192461551Z"
 		},
 		{
 			"function_name": "bearerToken",
@@ -14,15 +14,15 @@
 		},
 		{
 			"function_name": "logRequest",
-			"documentation_hash": "76ef0c129f8d0333c9550ccb0ade98f7d2b635b2be26d7eff47e1436063b6ff4",
-			"definition_hash": "9ef5f546b5f92d6fefdc568c5d18c9a110717c008ddce513bdac0a6cdf679c61",
-			"reviewed_at": "2026-06-13T17:28:53.803832642Z"
+			"documentation_hash": "a53d8a4bfc26729a86f38ac16e2f910a81b45d1b6609288d0548c540b18db260",
+			"definition_hash": "b9fcfa930c328d94f5aedba180f1e19f89f00f182352912b9f2a467396c30c4e",
+			"reviewed_at": "2026-06-28T20:29:56.198248173Z"
 		},
 		{
 			"function_name": "formatRequest",
-			"documentation_hash": "fd33aa76854dba83eb314306e205382995e0daed80818e6b8a2076d45f3ce5fd",
-			"definition_hash": "98ae8269031a3c02cfedadfe24d58b2b1fd2c6e6f676f3ba489f60d2da332661",
-			"reviewed_at": "2026-06-13T17:28:53.804056769Z"
+			"documentation_hash": "25c37c668d4563b56af6472010eae16c306764c8404098fe418a1f5029379b3e",
+			"definition_hash": "bcec7050bdf69499680538c0c6b42c9f5f6a01c0c0aa524bd24bd9709b9503f1",
+			"reviewed_at": "2026-06-28T20:29:56.236150999Z"
 		}
 	]
 }
